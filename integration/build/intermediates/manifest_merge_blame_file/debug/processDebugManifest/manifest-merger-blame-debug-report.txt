@@ -1,0 +1,10 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.example.test_kotlin_compose.integration" > <!-- Library manifest: keep it minimal. Any <application> meta-data should stay in the app module. -->
+4    <uses-sdk android:minSdkVersion="24" />
+5
+6    <uses-permission android:name="android.permission.INTERNET" />
+6-->C:\Users\haibe\AndroidStudioProjects\test_kotlin_compose\integration\src\main\AndroidManifest.xml:4:5-67
+6-->C:\Users\haibe\AndroidStudioProjects\test_kotlin_compose\integration\src\main\AndroidManifest.xml:4:22-64
+7
+8</manifest>
