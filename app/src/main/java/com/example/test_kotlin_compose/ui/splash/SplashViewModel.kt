@@ -15,7 +15,7 @@ import com.example.test_kotlin_compose.integration.adManager.InterstialAdManager
 import com.example.test_kotlin_compose.integration.adManager.NativeAdManagerImpl
 import com.example.test_kotlin_compose.integration.adManager.OpenAdManagerImpl
 import com.example.test_kotlin_compose.integration.adManager.RewardAdManagerImpl
-import com.example.test_kotlin_compose.integration.firebase.RemoteConfigProvider
+import com.example.test_kotlin_compose.config.RemoteConfigProvider
 import com.example.test_kotlin_compose.navigation.AppDestination
 import com.example.test_kotlin_compose.navigation.Home
 import com.example.test_kotlin_compose.navigation.Language
@@ -136,7 +136,7 @@ class SplashViewModel @Inject constructor(
     private fun loadAndShowInterstitial(activity: Activity) {
         if (!isNotificationPermissionGranted(activity)) {
             // 1. Start loading ad
-            adInterstitialManager.loadAd(
+            adInterstitialManager.loadAdInSplash(
                 adUnitName = AdUnitName.openInterstitial,
                 isHighFloor = true,
                 callback = { showRouteAfterAd() },
@@ -188,7 +188,7 @@ class SplashViewModel @Inject constructor(
     private fun loadAndShowAppOpen(activity: Activity) {
         if (!isNotificationPermissionGranted(activity)) {
             // 1. Start loading ad
-            adOpenManager.loadAd(
+            adOpenManager.loadAdInSplash(
                 adUnitName = AdUnitName.globalOpen,
                 isHighFloor = true,
                 callback = { showRouteAfterAd() },

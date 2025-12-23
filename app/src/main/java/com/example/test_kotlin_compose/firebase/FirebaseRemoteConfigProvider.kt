@@ -2,8 +2,9 @@ package com.example.test_kotlin_compose.firebase
 
 import android.content.Context
 import com.example.test_kotlin_compose.R
+import com.example.test_kotlin_compose.config.RemoteConfigProvider
 import com.example.test_kotlin_compose.integration.adManager.AdUnitName
-import com.example.test_kotlin_compose.integration.firebase.RemoteConfigProvider
+import com.example.test_kotlin_compose.integration.firebase.AdRemoteConfig
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfig
@@ -18,7 +19,7 @@ import javax.inject.Singleton
 @Singleton
 class FirebaseRemoteConfigProvider @Inject constructor(
     @ApplicationContext private val context: Context
-) : RemoteConfigProvider {
+) : RemoteConfigProvider, AdRemoteConfig {
 
     private val instance: FirebaseRemoteConfig
         get() = Firebase.remoteConfig
@@ -279,4 +280,3 @@ class FirebaseRemoteConfigProvider @Inject constructor(
         }
     }
 }
-

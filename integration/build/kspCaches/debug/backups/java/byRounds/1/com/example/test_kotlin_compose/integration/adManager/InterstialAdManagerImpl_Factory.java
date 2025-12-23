@@ -1,7 +1,7 @@
 package com.example.test_kotlin_compose.integration.adManager;
 
 import android.content.Context;
-import com.example.test_kotlin_compose.integration.firebase.RemoteConfigProvider;
+import com.example.test_kotlin_compose.integration.firebase.AdRemoteConfig;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
 import dagger.internal.QualifierMetadata;
@@ -26,10 +26,10 @@ import javax.inject.Provider;
 public final class InterstialAdManagerImpl_Factory implements Factory<InterstialAdManagerImpl> {
   private final Provider<Context> contextProvider;
 
-  private final Provider<RemoteConfigProvider> remoteConfigProvider;
+  private final Provider<AdRemoteConfig> remoteConfigProvider;
 
   public InterstialAdManagerImpl_Factory(Provider<Context> contextProvider,
-      Provider<RemoteConfigProvider> remoteConfigProvider) {
+      Provider<AdRemoteConfig> remoteConfigProvider) {
     this.contextProvider = contextProvider;
     this.remoteConfigProvider = remoteConfigProvider;
   }
@@ -40,12 +40,11 @@ public final class InterstialAdManagerImpl_Factory implements Factory<Interstial
   }
 
   public static InterstialAdManagerImpl_Factory create(Provider<Context> contextProvider,
-      Provider<RemoteConfigProvider> remoteConfigProvider) {
+      Provider<AdRemoteConfig> remoteConfigProvider) {
     return new InterstialAdManagerImpl_Factory(contextProvider, remoteConfigProvider);
   }
 
-  public static InterstialAdManagerImpl newInstance(Context context,
-      RemoteConfigProvider remoteConfig) {
+  public static InterstialAdManagerImpl newInstance(Context context, AdRemoteConfig remoteConfig) {
     return new InterstialAdManagerImpl(context, remoteConfig);
   }
 }

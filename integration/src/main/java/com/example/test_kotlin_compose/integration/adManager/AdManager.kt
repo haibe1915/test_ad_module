@@ -1,8 +1,7 @@
 package com.example.test_kotlin_compose.integration.adManager
 
-
-import android.app.Activity
 import android.content.Context
+import com.google.android.gms.ads.nativead.NativeAdOptions
 
 interface AdManager {
     suspend fun init(context: Context)
@@ -17,6 +16,29 @@ interface AdManager {
     fun destroyAll()
 
     fun getLoadedAd(adUnitName: AdUnitName): Any?
+}
+
+interface Preloadable
+
+interface InterstitialPreloadable : Preloadable {
+    fun preloadAd(adUnitName: AdUnitName, ignoreCooldown: Boolean? = false)
+}
+
+interface OpenAdPreloadable : Preloadable {
+    fun preloadAd(adUnitName: AdUnitName)
+}
+
+interface NativePreloadable : Preloadable {
+    fun preloadAd(
+        context: Context,
+        adUnitName: AdUnitName,
+        factoryId: String,
+        adChoicesPlacement: NativeAdOptions.AdChoicesPlacement? = null,
+        saved: Boolean? = null
+    )
+}
+interface RewardPreloadable : Preloadable {
+    fun preloadAd(adUnitName: AdUnitName)
 }
 
 interface WaterfallAdManager : AdManager {
@@ -54,18 +76,12 @@ class CompositeAdManager(private val managers: List<AdManager>) : AdManager {
     }
 }
 
-interface NativeAdManagerInterface : WaterfallAdManager {
+interface NativeAdManagerInterface : WaterfallAdManager, NativePreloadable
 
-}
+interface InterstitialAdManagerInterface : WaterfallAdManager, InterstitialPreloadable
 
-interface InterstitialAdManagerInterface : WaterfallAdManager {
-}
+interface BannerAdManagerInterface : AdManager
 
-interface BannerAdManagerInterface : AdManager {
-}
+interface OpenAdManagerInterface : AdManager, OpenAdPreloadable
 
-interface OpenAdManagerInterface : AdManager {
-}
-
-interface RewardAdManagerInterface : AdManager {
-}
+interface RewardAdManagerInterface : AdManager, RewardPreloadable

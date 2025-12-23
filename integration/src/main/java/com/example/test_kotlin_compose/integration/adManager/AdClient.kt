@@ -2,7 +2,7 @@ package com.example.test_kotlin_compose.integration.adManager
 
 import android.os.Handler
 import android.os.Looper
-import com.example.test_kotlin_compose.integration.firebase.RemoteConfigProvider
+import com.example.test_kotlin_compose.integration.firebase.AdRemoteConfig
 
 // Constants
 const val OPEN_APP_TEST_ID = "ca-app-pub-3940256099942544/9257395921"
@@ -85,23 +85,23 @@ var defaultNativeRefreshNewAd = 30
 
 object AdClient {
 
-    private lateinit var remoteConfig: RemoteConfigProvider
-    private var environment: AdsEnvironment = AdsEnvironment()
+    private lateinit var remoteConfig: AdRemoteConfig
+    private var environment: AdEnvironment = AdEnvironment()
 
     /**
      * Must be called by host app once at startup.
      * Prefer calling from `Application.onCreate()`.
      */
     fun configure(
-        provider: RemoteConfigProvider,
-        environment: AdsEnvironment = AdsEnvironment()
+        provider: AdRemoteConfig,
+        environment: AdEnvironment = AdEnvironment()
     ) {
         this.remoteConfig = provider
         this.environment = environment
     }
 
     /** Backward-compatible alias. */
-    fun setRemoteConfigProvider(provider: RemoteConfigProvider) {
+    fun setRemoteConfigProvider(provider: AdRemoteConfig) {
         configure(provider, environment)
     }
 
@@ -114,16 +114,18 @@ object AdClient {
         _nativeAdUnitIds = remoteConfig.getNativeAdUnitIds()
         _defaultLowAdId = remoteConfig.getLowAdUnitIds()
         _defaultHighAdId = remoteConfig.getHighAdUnitIds()
-        _configPreventAdClick = remoteConfig.getConfigPreventAdClick()
         _disableAds = remoteConfig.isDisableAds()
         _remoteAdUnitId = remoteConfig.getRemoteAdUnitId()
         _highFloorAdUnitId = remoteConfig.getHighFloorAdUnitId()
         collapsibleBanner = remoteConfig.getCollapsibleBanner()
-        sessionStartTime = System.currentTimeMillis()
+
+        // ad places are read by some managers/components
         adAppOpenPlaces = remoteConfig.getAdPlacesAppOpen()
         adNativePlaces = remoteConfig.getAdPlacesNative()
         adInterPlaces = remoteConfig.getAdPlacesInterstitial()
         adBannerPlaces = remoteConfig.getAdPlacesBanner()
+
+        sessionStartTime = System.currentTimeMillis()
 
         if (canDismissAds()) {
             return

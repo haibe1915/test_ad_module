@@ -162,7 +162,7 @@ fun LanguageScreen(
                             onClick = {
                                 val activity = context as? Activity
                                 if (activity != null) {
-                                    rewardAdManager.loadAd(AdUnitName.resultReward)
+                                    rewardAdManager.preloadAd(AdUnitName.resultReward)
                                 }
                             }
                         ) {

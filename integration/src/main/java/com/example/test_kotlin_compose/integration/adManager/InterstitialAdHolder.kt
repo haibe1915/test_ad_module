@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import com.example.test_kotlin_compose.integration.firebase.RemoteConfigProvider
+import com.example.test_kotlin_compose.integration.firebase.AdRemoteConfig
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -18,7 +18,7 @@ class InterstitialAdHolder(
     private val manager: InterstialAdManagerImpl,
     val adUnitId: String,
     val adUnitName: String,
-    private val remoteConfig: RemoteConfigProvider
+    private val remoteConfig: AdRemoteConfig
 ) {
     var interstitialAd: InterstitialAd? = null
     private var expireHandler: Handler? = null
@@ -37,11 +37,6 @@ class InterstitialAdHolder(
         if (AdClient.canDismissAds()) {
             return
         }
-
-        // Premium logic placeholder
-        // val prem = AdClient.getInterstitialPremium().contains(adUnitName.name)
-
-        // Assuming manager has a method to track loading ads
         manager.addLoadingAd(adUnitId)
 
         InterstitialAd.load(

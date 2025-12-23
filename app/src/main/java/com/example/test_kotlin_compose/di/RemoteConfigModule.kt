@@ -1,7 +1,8 @@
 package com.example.test_kotlin_compose.di
 
+import com.example.test_kotlin_compose.config.RemoteConfigProvider
 import com.example.test_kotlin_compose.firebase.FirebaseRemoteConfigProvider
-import com.example.test_kotlin_compose.integration.firebase.RemoteConfigProvider
+import com.example.test_kotlin_compose.integration.firebase.AdRemoteConfig
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -17,5 +18,10 @@ abstract class RemoteConfigModule {
     abstract fun bindRemoteConfigProvider(
         impl: FirebaseRemoteConfigProvider
     ): RemoteConfigProvider
-}
 
+    @Binds
+    @Singleton
+    abstract fun bindAdRemoteConfig(
+        impl: FirebaseRemoteConfigProvider
+    ): AdRemoteConfig
+}
