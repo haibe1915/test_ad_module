@@ -2,14 +2,17 @@ package com.example.test_kotlin_compose.integration.adComponent
 
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.test_kotlin_compose.integration.R
@@ -41,7 +44,7 @@ fun NativeAdComposable(
     var isAdLoaded by remember { mutableStateOf(false) };
     var nativeAd by remember { mutableStateOf(manager.getLoadedAd(adUnitName)) }
     val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
+    val screenWidth = LocalWindowInfo.current.containerSize.width
     val nativeWidth = remember { screenWidth } // Or passed param
     val nativeHeight = remember(factoryId) {
         AdNativeHelper.getAdNativeHeight(factoryId, configuration.screenHeightDp.dp)
@@ -137,22 +140,32 @@ fun NativeAdComposable(
     if (isAdLoaded && nativeAd != null) {
         AndroidView(
             factory = { ctx ->
-                // 1. Inflate the XML Layout based on factoryId
                 val layoutId = AdNativeHelper.getLayoutIdFromFactory(factoryId)
-                val adView = LayoutInflater.from(ctx).inflate(layoutId, null) as NativeAdView
 
-                // 2. Populate the View
+                val parent = android.widget.FrameLayout(ctx)
+                val adView = LayoutInflater.from(ctx)
+                    .inflate(layoutId, parent, false) as NativeAdView
+
+                adView.layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+
                 populateNativeAdView(nativeAd!!, adView)
-
                 adView
             },
             update = { adView ->
-                // Update logic if needed
+                adView.layoutParams = (adView.layoutParams ?: ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )).apply {
+                    width = ViewGroup.LayoutParams.MATCH_PARENT
+                }
             },
-            modifier = modifier
+            modifier = modifier.fillMaxWidth()
         )
     } else {
-        Box {  }
+        Box(modifier = modifier.fillMaxWidth()) { }
     }
 }
 
