@@ -1,4 +1,4 @@
-package com.example.test_kotlin_compose.integration.adManager
+package com.example.test_kotlin_compose.integration.adManager.api
 
 import android.content.Context
 import com.google.android.gms.ads.nativead.NativeAdOptions
@@ -6,39 +6,37 @@ import com.google.android.gms.ads.nativead.NativeAdOptions
 interface AdManager {
     suspend fun init(context: Context)
 
-    // Check if ready
-    fun isAdLoaded(adUnitName: AdUnitName): Boolean
+    fun isAdLoaded(adUnitKey: String): Boolean
 
-    // Clean up specific ad
-    fun destroyAd(adUnitName: AdUnitName)
+    fun destroyAd(adUnitKey: String)
 
-    // Clean up everything (e.g. on app termination)
     fun destroyAll()
 
-    fun getLoadedAd(adUnitName: AdUnitName): Any?
+    fun getLoadedAd(adUnitKey: String): Any?
 }
 
 interface Preloadable
 
 interface InterstitialPreloadable : Preloadable {
-    fun preloadAd(adUnitName: AdUnitName, ignoreCooldown: Boolean? = false)
+    fun preloadAd(adUnitKey: String, ignoreCooldown: Boolean? = false)
 }
 
 interface OpenAdPreloadable : Preloadable {
-    fun preloadAd(adUnitName: AdUnitName)
+    fun preloadAd(adUnitKey: String)
 }
 
 interface NativePreloadable : Preloadable {
     fun preloadAd(
         context: Context,
-        adUnitName: AdUnitName,
+        adUnitKey: String,
         factoryId: String,
         adChoicesPlacement: NativeAdOptions.AdChoicesPlacement? = null,
-        saved: Boolean? = null
+        saved: Boolean? = null,
     )
 }
+
 interface RewardPreloadable : Preloadable {
-    fun preloadAd(adUnitName: AdUnitName)
+    fun preloadAd(adUnitKey: String)
 }
 
 interface WaterfallAdManager : AdManager {
@@ -47,32 +45,28 @@ interface WaterfallAdManager : AdManager {
     suspend fun loadWaterFall()
     fun getAvailableAdHolder(): Any?
     fun getHighAvailableAdHolder(): Any?
-
 }
 
 class CompositeAdManager(private val managers: List<AdManager>) : AdManager {
 
-    override suspend  fun init(context: Context) {
-        // This iterates through all child managers and calls their init method
+    override suspend fun init(context: Context) {
         managers.forEach { it.init(context) }
     }
 
-    override fun isAdLoaded(adUnitName: AdUnitName): Boolean {
-        // Returns true if ANY manager has this ad loaded
-        return managers.any { it.isAdLoaded(adUnitName) }
+    override fun isAdLoaded(adUnitKey: String): Boolean {
+        return managers.any { it.isAdLoaded(adUnitKey) }
     }
 
-    override fun destroyAd(adUnitName: AdUnitName) {
-        managers.forEach { it.destroyAd(adUnitName) }
+    override fun destroyAd(adUnitKey: String) {
+        managers.forEach { it.destroyAd(adUnitKey) }
     }
 
     override fun destroyAll() {
         managers.forEach { it.destroyAll() }
     }
 
-    override fun getLoadedAd(adUnitName: AdUnitName): Any? {
-        // Returns the first non-null ad found
-        return managers.firstNotNullOfOrNull { it.getLoadedAd(adUnitName) }
+    override fun getLoadedAd(adUnitKey: String): Any? {
+        return managers.firstNotNullOfOrNull { it.getLoadedAd(adUnitKey) }
     }
 }
 

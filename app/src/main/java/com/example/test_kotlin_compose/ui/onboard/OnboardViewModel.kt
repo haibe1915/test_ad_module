@@ -1,11 +1,11 @@
 package com.example.test_kotlin_compose.ui.onboard
 
 import androidx.lifecycle.ViewModel
-import com.example.test_kotlin_compose.integration.adManager.BannerAdManagerImpl
-import com.example.test_kotlin_compose.integration.adManager.InterstialAdManagerImpl
-import com.example.test_kotlin_compose.integration.adManager.NativeAdManagerImpl
-import com.example.test_kotlin_compose.integration.adManager.OpenAdManagerImpl
-import com.example.test_kotlin_compose.integration.adManager.RewardAdManagerImpl
+import com.example.test_kotlin_compose.integration.adManager.impl.BannerAdManagerImpl
+import com.example.test_kotlin_compose.integration.adManager.impl.InterstialAdManagerImpl
+import com.example.test_kotlin_compose.integration.adManager.impl.NativeAdManagerImpl
+import com.example.test_kotlin_compose.integration.adManager.impl.OpenAdManagerImpl
+import com.example.test_kotlin_compose.integration.adManager.impl.RewardAdManagerImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

@@ -1,7 +1,6 @@
 package com.example.test_kotlin_compose.ui.language
 
 import android.app.Activity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,19 +17,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.test_kotlin_compose.integration.adComponent.BannerAdComposable
 import com.example.test_kotlin_compose.integration.adComponent.NativeAdComposable
-import com.example.test_kotlin_compose.integration.adManager. RewardAdManagerImpl
-import com.example.test_kotlin_compose.integration.adManager.AdUnitName
-import com.example.test_kotlin_compose.integration.adManager.BannerAdManagerImpl
-import com.example.test_kotlin_compose.integration.adManager.InterstialAdManagerImpl
-import com.example.test_kotlin_compose.integration.adManager.NativeAdManagerImpl
-import com.example.test_kotlin_compose.integration.adManager.OpenAdManagerImpl
+import com.example.test_kotlin_compose.integration.adManager.impl.RewardAdManagerImpl
+import com.example.test_kotlin_compose.integration.adManager.impl.BannerAdManagerImpl
+import com.example.test_kotlin_compose.integration.adManager.impl.InterstialAdManagerImpl
+import com.example.test_kotlin_compose.integration.adManager.impl.NativeAdManagerImpl
+import com.example.test_kotlin_compose.integration.adManager.impl.OpenAdManagerImpl
 import com.example.test_kotlin_compose.ui.component.MyAppBar
+import com.example.test_kotlin_compose.util.AdUnitKeys
 
 @Composable
 fun LanguageScreen(
@@ -78,7 +76,7 @@ fun LanguageScreen(
                             onClick = {
                                 val activity = context as? Activity
                                 if (activity != null) {
-                                    interstitialAdManager.preloadAd(adUnitName = AdUnitName.convertInterstitial)
+                                    interstitialAdManager.preloadAd(adUnitKey = AdUnitKeys.ConvertInterstitial)
                                 }
                             }
                         ) {
@@ -90,7 +88,7 @@ fun LanguageScreen(
                                 if (activity != null) {
                                     interstitialAdManager.show(
                                         activity,
-                                        adUnitName = AdUnitName.convertInterstitial,
+                                        adUnitKey = AdUnitKeys.ConvertInterstitial,
                                         callback = null,
                                         null,
                                         null,
@@ -108,7 +106,7 @@ fun LanguageScreen(
                                 if (activity != null) {
                                     interstitialAdManager.loadAdAndShow(
                                         activity,
-                                        adUnitName = AdUnitName.convertInterstitial,
+                                        adUnitKey = AdUnitKeys.ConvertInterstitial,
                                         callback = null,
                                         null,
                                         5000,
@@ -123,7 +121,7 @@ fun LanguageScreen(
                             onClick = {
                                 val activity = context as? Activity
                                 if (activity != null) {
-                                    openAdManager.preloadAd(AdUnitName.globalOpen)
+                                    openAdManager.preloadAd(adUnitKey = AdUnitKeys.GlobalOpen)
                                 }
                             }
                         ) {
@@ -135,7 +133,7 @@ fun LanguageScreen(
                                 if (activity != null) {
                                     openAdManager.showAdIfAvailable(
                                         activity,
-                                        AdUnitName.globalOpen,
+                                        adUnitKey = AdUnitKeys.GlobalOpen,
                                         {}
                                     )
                                 }
@@ -149,7 +147,7 @@ fun LanguageScreen(
                                 if (activity != null) {
                                     openAdManager.loadAdAndShow(
                                         activity,
-                                        AdUnitName.globalOpen,
+                                        adUnitKey = AdUnitKeys.GlobalOpen,
                                         null,
                                         null,
                                         5000
@@ -164,7 +162,7 @@ fun LanguageScreen(
                             onClick = {
                                 val activity = context as? Activity
                                 if (activity != null) {
-                                    rewardAdManager.preloadAd(AdUnitName.resultReward)
+                                    rewardAdManager.preloadAd(adUnitKey = AdUnitKeys.ResultReward)
                                 }
                             }
                         ) {
@@ -176,7 +174,7 @@ fun LanguageScreen(
                                 if (activity != null) {
                                     rewardAdManager.showAd(
                                         activity,
-                                        AdUnitName.resultReward,
+                                        adUnitKey = AdUnitKeys.ResultReward,
                                         onUserEarnedReward = { reward ->
                                             // Handle reward
                                         }
@@ -192,7 +190,7 @@ fun LanguageScreen(
                                 if (activity != null) {
                                     rewardAdManager.loadAdAndShow(
                                         activity,
-                                        AdUnitName.resultReward,
+                                        adUnitKey = AdUnitKeys.ResultReward,
                                         onUserEarnedReward = { reward ->
                                             // Handle reward
                                         },
@@ -207,12 +205,11 @@ fun LanguageScreen(
                 }
 
                 NativeAdComposable(
-                    adUnitName = AdUnitName.languageNative,
+                    adUnitKey = AdUnitKeys.LanguageNative,
                     factoryId = "adFactoryLanguage",
                     manager = nativeAdManager,
+                    adClient = viewModel.adClient,
                     modifier = Modifier,
-                    showLoadingCard = true,
-                    keepSize = false,
                     autoLoad = true,
                     highFloor = true
                 )
@@ -223,7 +220,8 @@ fun LanguageScreen(
                 ) {
                 }
                 BannerAdComposable(
-                    adUnitName = AdUnitName.languageBanner,
+                    adUnitKey = AdUnitKeys.LanguageBanner,
+                    adClient = viewModel.adClient,
                     showLoadingCard = true,
                     keepSize = false,
                     retryNumber = 3,

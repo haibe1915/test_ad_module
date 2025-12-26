@@ -1,6 +1,5 @@
 package com.example.test_kotlin_compose.config
 
-import com.example.test_kotlin_compose.integration.adManager.AdUnitName
 import org.json.JSONObject
 
 /**
@@ -66,21 +65,21 @@ interface RemoteConfigProvider {
     fun getConfigAdBanner(): Map<String, Any>
     fun getConfigAdAppOpen(): Map<String, Any>
 
-    fun getRemoteAdUnitId(): Map<AdUnitName, String>
-    fun getHighFloorAdUnitId(): Map<AdUnitName, String>
+    fun getRemoteAdUnitId(): Map<String, String>
+    fun getHighFloorAdUnitId(): Map<String, String>
     fun getLowAdUnitIds(): Map<String, String>
     fun getHighAdUnitIds(): Map<String, String>
     fun getInterstitialAdUnitIds(): List<Map<String, String>>
     fun getNativeAdUnitIds(): List<Map<String, String>>
 
-    fun getAdPlacesAppOpen(): Map<AdUnitName, Map<String, Any>>
-    fun getAdPlacesInterstitial(): Map<AdUnitName, Map<String, Any>>
-    fun getAdPlacesNative(): Map<AdUnitName, Map<String, Any>>
-    fun getAdPlacesBanner(): Map<AdUnitName, Map<String, Any>>
+    fun getAdPlacesAppOpen(): Map<String, Map<String, Any>>
+    fun getAdPlacesInterstitial(): Map<String, Map<String, Any>>
+    fun getAdPlacesNative(): Map<String, Map<String, Any>>
+    fun getAdPlacesBanner(): Map<String, Map<String, Any>>
 
     fun getAppVersionCtaRate(): List<String>
     fun getAdsNativePremium(): List<String>
-    fun getCollapsibleBanner(): List<AdUnitName>
+    fun getCollapsibleBanner(): List<String>
 
     fun getWaterfallApply(): Boolean
     fun getWaterfallLoadingMode(): Int

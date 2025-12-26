@@ -19,8 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.test_kotlin_compose.integration.adManager.AdClient
-import com.example.test_kotlin_compose.integration.adManager.AdUnitName
-import com.example.test_kotlin_compose.integration.adManager.BannerAdManagerImpl
+import com.example.test_kotlin_compose.integration.adManager.impl.BannerAdManagerImpl
 import com.google.ads.mediation.admob.AdMobAdapter
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
@@ -30,7 +29,8 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun BannerAdComposable(
-    adUnitName: AdUnitName,
+    adUnitKey: String,
+    adClient: AdClient,
     showLoadingCard: Boolean? = true,
     keepSize: Boolean? = false,
     retryNumber: Int? = 3,
@@ -44,26 +44,22 @@ fun BannerAdComposable(
     val reloadTime = adManager.delayTime.toLong()
 
     // Check if we can dismiss ads
-    if (AdClient.canDismissAds()) {
+    if (adClient.canDismissAds()) {
         return
     }
 
-    LaunchedEffect(adUnitName) {
-        if (AdClient.isDisablePreload(adUnitName)) {
-             // Handle self load logic if needed, similar to Dart's selfLoad
-        }
-
-        val existingAd = adManager.get(adUnitName)
+    LaunchedEffect(adUnitKey) {
+        val existingAd = adManager.get(adUnitKey)
         if (existingAd != null) {
             adView = existingAd
             isAdLoaded = true
         } else {
             // Create and load new ad
             val newAdView = AdView(context)
-            newAdView.setAdSize(adManager.createAdSize(adUnitName))
-            newAdView.adUnitId = AdClient.getAdUnitId(adUnitName)
+            newAdView.setAdSize(adManager.createAdSize(adUnitKey))
+            newAdView.adUnitId = adClient.getAdUnitId(adUnitKey)
 
-            val extras = adManager.getCollapsibleExtras(adUnitName)
+            val extras = adManager.getCollapsibleExtras(adUnitKey)
             val adRequestBuilder = AdRequest.Builder()
             if (extras != null) {
                 adRequestBuilder.addNetworkExtrasBundle(AdMobAdapter::class.java, extras)
@@ -72,25 +68,15 @@ fun BannerAdComposable(
             newAdView.adListener = object : AdListener() {
                 override fun onAdLoaded() {
                     isAdLoaded = true
-                    adManager.save(adUnitName, newAdView)
+                    adManager.save(adUnitKey, newAdView)
                 }
 
                 override fun onAdFailedToLoad(error: LoadAdError) {
                     failCounter++
-                    if (failCounter <= maxLoadFailCounter) {
-                        // Retry logic handled by LaunchedEffect re-trigger or separate coroutine if needed
-                        // For simplicity in Compose, we might need a more robust retry mechanism
-                        // Here we just log or ignore for now, or trigger a state change to retry
-                    }
                 }
 
                 override fun onAdClicked() {
-                    AdClient.notifyAdClick()
-                    // LoggerManager logic
-                }
-
-                override fun onAdImpression() {
-                    // LoggerManager logic
+                    adClient.notifyAdClick()
                 }
             }
 

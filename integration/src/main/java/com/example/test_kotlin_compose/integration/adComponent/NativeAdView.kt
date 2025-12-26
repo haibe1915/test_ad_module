@@ -10,16 +10,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.test_kotlin_compose.integration.R
 import com.example.test_kotlin_compose.integration.adManager.AdClient
-import com.example.test_kotlin_compose.integration.adManager.AdNativeHelper
-import com.example.test_kotlin_compose.integration.adManager.AdUnitName
-import com.example.test_kotlin_compose.integration.adManager.NativeAdManagerImpl
+import com.example.test_kotlin_compose.integration.adManager.impl.AdNativeHelper
+import com.example.test_kotlin_compose.integration.adManager.impl.NativeAdManagerImpl
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
@@ -31,31 +27,21 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun NativeAdComposable(
-    adUnitName: AdUnitName,
-    factoryId: String, // Maps to a layout ID
+    adUnitKey: String,
+    factoryId: String,
     manager: NativeAdManagerImpl,
+    adClient: AdClient,
     modifier: Modifier = Modifier,
-    showLoadingCard: Boolean? = true,
-    keepSize: Boolean? = false,
     autoLoad: Boolean? = true,
     highFloor: Boolean? = false,
 ) {
     val context = LocalContext.current
-    var isAdLoaded by remember { mutableStateOf(false) };
-    var nativeAd by remember { mutableStateOf(manager.getLoadedAd(adUnitName)) }
-    val configuration = LocalConfiguration.current
-    val screenWidth = LocalWindowInfo.current.containerSize.width
-    val nativeWidth = remember { screenWidth } // Or passed param
-    val nativeHeight = remember(factoryId) {
-        AdNativeHelper.getAdNativeHeight(factoryId, configuration.screenHeightDp.dp)
-    }
-    var isDispose = false
-    var adUnitId = remember { AdClient.getAdUnitId(adUnitName) }
-    var failCounter = remember { 0 }
-    var isCta = remember { false }
-    var maxLoadFailCounter = remember { 3 }
+    var isAdLoaded by remember { mutableStateOf(false) }
+    var nativeAd by remember { mutableStateOf(manager.getLoadedAd(adUnitKey)) }
+
+    val isDispose = false
+    var adUnitId = remember { adClient.getAdUnitId(adUnitKey) }
     var delayTime: Int = remember { 100 }
-    var saved = remember { false }
     var isHighFloor = remember { highFloor }
     val scope = rememberCoroutineScope()
 
@@ -64,23 +50,14 @@ fun NativeAdComposable(
             val adLoader = AdLoader.Builder(context, adUnitId)
                 .forNativeAd { ad: NativeAd ->
                     nativeAd = ad
-                    failCounter = 0
                     isAdLoaded = true
-                    ad.setOnPaidEventListener { adValue ->
-                        // handle paid event if needed
-                    }
+                    ad.setOnPaidEventListener { /* optional */ }
                 }
                 .withAdListener(object : AdListener() {
                     override fun onAdClicked() {
                         super.onAdClicked()
-                        AdClient.notifyAdClick()
-                        if (adUnitName == AdUnitName.languageNative) {
-                            // language native specific logic
-                        }
-
-                        if (adUnitName == AdUnitName.onboardNative || adUnitName == AdUnitName.onboardNative2) {
-                            // onboard specific click behavior if needed
-                        }
+                        adClient.notifyAdClick()
+                        // Add per-placement click logic here if you need it.
                     }
 
                     override fun onAdFailedToLoad(error: LoadAdError) {
@@ -89,11 +66,9 @@ fun NativeAdComposable(
                             isHighFloor = false
                             scope.launch {
                                 delay(delayTime.toLong())
-                                adUnitId = AdClient.getAdUnitId(adUnitName)
+                                adUnitId = adClient.getAdUnitId(adUnitKey)
                                 loadNativeAd()
                             }
-                        } else {
-                            return
                         }
                     }
                 })
@@ -102,39 +77,34 @@ fun NativeAdComposable(
             adLoader.loadAd(AdRequest.Builder().build())
         } catch (e: Exception) {
             e.printStackTrace()
-            // Optionally: handle error state, e.g.
-            // isAdLoaded = false
         }
     }
 
+    fun createNativeAd() {
+        if (isDispose) return
 
-    fun creatNativeAd(autoLoad: Boolean) {
-        if (isDispose) return;
-
-        nativeAd = manager.getLoadedAd(adUnitName)
+        nativeAd = manager.getLoadedAd(adUnitKey)
 
         if (nativeAd != null) {
             isAdLoaded = true
-
-        } else if (!AdClient.canDismissAds() && !manager.waterfallApply) {
+        } else if (!adClient.canDismissAds() && !manager.waterfallApply) {
             loadNativeAd()
         } else {
             if (!manager.waterfallApply) {
                 loadNativeAd()
             }
         }
-
     }
 
     LaunchedEffect(Unit) {
-        maxLoadFailCounter = manager.maxLoadFailCounter
-        delayTime = 100;
-        val highFloorAdUnitId = AdClient.getHighFloor(adUnitName)
+        delayTime = 100
+        val highFloorAdUnitId = adClient.getHighFloor(adUnitKey)
         if (highFloor == true) {
             adUnitId = highFloorAdUnitId ?: adUnitId
         }
-        creatNativeAd(autoLoad == true)
-
+        if (autoLoad == true) {
+            createNativeAd()
+        }
     }
 
     if (isAdLoaded && nativeAd != null) {
@@ -194,7 +164,6 @@ fun populateNativeAdView(nativeAd: NativeAd, adView: NativeAdView) {
             adView.bodyView?.visibility = View.VISIBLE
             (adView.bodyView as TextView).text = nativeAd.body
         }
-
         if (nativeAd.callToAction == null) {
             adView.callToActionView?.visibility = View.INVISIBLE
         } else {

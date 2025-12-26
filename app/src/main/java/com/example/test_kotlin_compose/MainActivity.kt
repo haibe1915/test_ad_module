@@ -16,7 +16,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.test_kotlin_compose.integration.adManager.NativeAdManagerImpl
 import com.example.test_kotlin_compose.navigation.Home
 import com.example.test_kotlin_compose.navigation.Language
 import com.example.test_kotlin_compose.navigation.Onboard

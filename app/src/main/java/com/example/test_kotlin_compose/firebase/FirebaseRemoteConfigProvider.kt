@@ -3,7 +3,6 @@ package com.example.test_kotlin_compose.firebase
 import android.content.Context
 import com.example.test_kotlin_compose.R
 import com.example.test_kotlin_compose.config.RemoteConfigProvider
-import com.example.test_kotlin_compose.integration.adManager.AdUnitName
 import com.example.test_kotlin_compose.integration.firebase.AdRemoteConfig
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
@@ -111,30 +110,26 @@ class FirebaseRemoteConfigProvider @Inject constructor(
     override fun getConfigAdBanner(): Map<String, Any> = parseJsonToMap("config_ads_banner")
     override fun getConfigAdAppOpen(): Map<String, Any> = parseJsonToMap("config_ads_app_open")
 
-    override fun getRemoteAdUnitId(): Map<AdUnitName, String> {
+    override fun getRemoteAdUnitId(): Map<String, String> {
         val jsonString = getString("ad_unit_ids")
-        val result = mutableMapOf<AdUnitName, String>()
+        val result = mutableMapOf<String, String>()
         try {
             val jsonObject = JSONObject(jsonString)
             jsonObject.keys().forEach { key ->
-                stringToAdUnitNameOrNull(key)?.let { adUnitName ->
-                    result[adUnitName] = jsonObject.getString(key)
-                }
+                result[key] = jsonObject.getString(key)
             }
         } catch (_: Exception) {
         }
         return result
     }
 
-    override fun getHighFloorAdUnitId(): Map<AdUnitName, String> {
+    override fun getHighFloorAdUnitId(): Map<String, String> {
         val jsonString = getString("high_floor_ad_unit")
-        val result = mutableMapOf<AdUnitName, String>()
+        val result = mutableMapOf<String, String>()
         try {
             val jsonObject = JSONObject(jsonString)
             jsonObject.keys().forEach { key ->
-                stringToAdUnitNameOrNull(key)?.let { adUnitName ->
-                    result[adUnitName] = jsonObject.getString(key)
-                }
+                result[key] = jsonObject.getString(key)
             }
         } catch (_: Exception) {
         }
@@ -149,25 +144,25 @@ class FirebaseRemoteConfigProvider @Inject constructor(
 
     override fun getNativeAdUnitIds(): List<Map<String, String>> = parseJsonToListOfMaps("ads_native_wf")
 
-    override fun getAdPlacesAppOpen(): Map<AdUnitName, Map<String, Any>> = parseAdPlaces("ad_places_app_open")
+    override fun getAdPlacesAppOpen(): Map<String, Map<String, Any>> = parseAdPlaces("ad_places_app_open")
 
-    override fun getAdPlacesInterstitial(): Map<AdUnitName, Map<String, Any>> = parseAdPlaces("ad_places_interstitial")
+    override fun getAdPlacesInterstitial(): Map<String, Map<String, Any>> = parseAdPlaces("ad_places_interstitial")
 
-    override fun getAdPlacesNative(): Map<AdUnitName, Map<String, Any>> = parseAdPlaces("ad_places_native")
+    override fun getAdPlacesNative(): Map<String, Map<String, Any>> = parseAdPlaces("ad_places_native")
 
-    override fun getAdPlacesBanner(): Map<AdUnitName, Map<String, Any>> = parseAdPlaces("ad_places_banner")
+    override fun getAdPlacesBanner(): Map<String, Map<String, Any>> = parseAdPlaces("ad_places_banner")
 
     override fun getAppVersionCtaRate(): List<String> = parseJsonToStringList("app_versions_cta_show_rate")
 
     override fun getAdsNativePremium(): List<String> = parseJsonToStringList("ads_natives_premium")
 
-    override fun getCollapsibleBanner(): List<AdUnitName> {
+    override fun getCollapsibleBanner(): List<String> {
         val jsonString = getString("collapsible_banner")
-        val result = mutableListOf<AdUnitName>()
+        val result = mutableListOf<String>()
         try {
             val jsonArray = JSONArray(jsonString)
             for (i in 0 until jsonArray.length()) {
-                stringToAdUnitNameOrNull(jsonArray.getString(i))?.let { result.add(it) }
+                result.add(jsonArray.getString(i))
             }
         } catch (_: Exception) {
         }
@@ -175,7 +170,6 @@ class FirebaseRemoteConfigProvider @Inject constructor(
     }
 
     override fun getWaterfallApply(): Boolean {
-        // TODO wire to remote config when ready
         // return getBoolean("waterfall_apply")
         return true
     }
@@ -185,6 +179,7 @@ class FirebaseRemoteConfigProvider @Inject constructor(
     override fun getWaterfallDebug(): Boolean = getBoolean("waterfall_debug")
 
     override fun getMaxRetry(): Int = getLong("max_retry").toInt()
+
 
     // ---- helpers ----
 
@@ -237,16 +232,16 @@ class FirebaseRemoteConfigProvider @Inject constructor(
         return result
     }
 
-    private fun parseAdPlaces(key: String): Map<AdUnitName, Map<String, Any>> {
+    private fun parseAdPlaces(key: String): Map<String, Map<String, Any>> {
         val jsonString = getString(key)
-        val result = mutableMapOf<AdUnitName, Map<String, Any>>()
+        val result = mutableMapOf<String, Map<String, Any>>()
         try {
             val jsonArray = JSONArray(jsonString)
             for (i in 0 until jsonArray.length()) {
                 val itemObj = jsonArray.getJSONObject(i)
                 val name = itemObj.optString("name")
-                stringToAdUnitNameOrNull(name)?.let { adUnitName ->
-                    result[adUnitName] = jsonToMap(itemObj.toString())
+                if (name.isNotBlank()) {
+                    result[name] = jsonToMap(itemObj.toString())
                 }
             }
         } catch (_: Exception) {
@@ -270,13 +265,5 @@ class FirebaseRemoteConfigProvider @Inject constructor(
         } catch (_: Exception) {
         }
         return map
-    }
-
-    private fun stringToAdUnitNameOrNull(name: String): AdUnitName? {
-        return try {
-            AdUnitName.valueOf(name)
-        } catch (_: IllegalArgumentException) {
-            null
-        }
     }
 }

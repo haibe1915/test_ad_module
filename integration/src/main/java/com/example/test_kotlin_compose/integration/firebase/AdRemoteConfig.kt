@@ -1,13 +1,5 @@
 package com.example.test_kotlin_compose.integration.firebase
 
-import com.example.test_kotlin_compose.integration.adManager.AdUnitName
-
-/**
- * Ads-only config contract for the integration module.
- *
- * Host apps should implement this (e.g. using Firebase Remote Config, local JSON, etc.).
- * The integration module should ONLY depend on this interface for ad configuration.
- */
 interface AdRemoteConfig {
 
     /** Global kill-switch for ads from remote config. */
@@ -25,11 +17,11 @@ interface AdRemoteConfig {
     /** Ramp-up delay between waterfall loads (ms). */
     fun getAdsRampUpTime(): Long
 
-    /** High-floor mapping (optional). */
-    fun getHighFloorAdUnitId(): Map<AdUnitName, String>
+    /** High-floor mapping (optional). Key = placement name. */
+    fun getHighFloorAdUnitId(): Map<String, String>
 
-    /** Remote-config ad unit ids for fixed placements. */
-    fun getRemoteAdUnitId(): Map<AdUnitName, String>
+    /** Remote-config ad unit ids for fixed placements. Key = placement name. */
+    fun getRemoteAdUnitId(): Map<String, String>
 
     /** Waterfall floor ids per format. */
     fun getLowAdUnitIds(): Map<String, String>
@@ -44,15 +36,17 @@ interface AdRemoteConfig {
     fun getConfigAdBanner(): Map<String, Any>
     fun getConfigAdAppOpen(): Map<String, Any>
 
-    /** Ad places (per-screen placement config). */
-    fun getAdPlacesAppOpen(): Map<AdUnitName, Map<String, Any>>
-    fun getAdPlacesInterstitial(): Map<AdUnitName, Map<String, Any>>
-    fun getAdPlacesNative(): Map<AdUnitName, Map<String, Any>>
-    fun getAdPlacesBanner(): Map<AdUnitName, Map<String, Any>>
+    /** Ad places (per-screen placement config). Key = placement name. */
+    fun getAdPlacesAppOpen(): Map<String, Map<String, Any>>
+    fun getAdPlacesInterstitial(): Map<String, Map<String, Any>>
+    fun getAdPlacesNative(): Map<String, Map<String, Any>>
+    fun getAdPlacesBanner(): Map<String, Map<String, Any>>
 
     /** Misc ad-related lists. */
     fun getAdsNativePremium(): List<String>
-    fun getCollapsibleBanner(): List<AdUnitName>
+
+    /** List of placement names that support collapsible banner behavior. */
+    fun getCollapsibleBanner(): List<String>
 
     /** Optional screen-level ad behavior configs (used by some click logic). */
     fun getConfigScreenLanguage(): Map<String, Any>

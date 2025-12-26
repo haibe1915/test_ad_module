@@ -1,8 +1,13 @@
 package com.example.test_kotlin_compose.integration.adManager
 
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import com.example.test_kotlin_compose.integration.adManager.api.AdClientGateway
 import com.example.test_kotlin_compose.integration.firebase.AdRemoteConfig
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
 // Constants
 const val OPEN_APP_TEST_ID = "ca-app-pub-3940256099942544/9257395921"
@@ -10,42 +15,6 @@ const val NATIVE_TEST_ID = "ca-app-pub-3940256099942544/2247696110"
 const val BANNER_TEST_ID = "ca-app-pub-3940256099942544/9214589741"
 const val INTERSTITIAL_TEST_ID = "ca-app-pub-3940256099942544/1033173712"
 const val REWARD_TEST_ID = "ca-app-pub-3940256099942544/5224354917"
-
-enum class AdUnitName {
-    homeBanner,
-    languageBanner,
-    mapBanner,
-    scanBanner,
-    convertNative,
-    resultNative,
-    historyNative,
-    languageNative,
-    onboardNative,
-    onboardNative2,
-    onboardFullNative,
-    settingNative,
-    scanSuccessNative,
-    customizeNative,
-    uninstallNative,
-    businessNative,
-    resultReward,
-    resultInterstitial,
-    convertInterstitial,
-    openInterstitial,
-    uninstallInterstitial,
-    premiumReward,
-    globalOpen,
-    back,
-    none
-}
-
-fun stringToAdUnitName(value: String): AdUnitName {
-    return try {
-        AdUnitName.valueOf(value)
-    } catch (e: IllegalArgumentException) {
-        AdUnitName.none
-    }
-}
 
 enum class AdType {
     native,
@@ -70,11 +39,6 @@ enum class AdState {
     notLoaded,
 }
 
-enum class AdLoadState {
-    loaded, loading, timeout, failed, none
-
-}
-
 // Default Reload Times
 var defaultOpenAppReloadAdTime = 1000
 var defaultInterstitialAdReloadTime = 1000
@@ -83,63 +47,64 @@ var defaultBannerAdReloadTime = 300
 var defaultRewardAdReloadTime = 3000
 var defaultNativeRefreshNewAd = 30
 
-object AdClient {
+@Singleton
+class AdClient @Inject constructor(
+    private val remoteConfig: AdRemoteConfig,
+    @ApplicationContext private val context: Context,
+) : AdClientGateway {
 
-    private lateinit var remoteConfig: AdRemoteConfig
-    private var environment: AdEnvironment = AdEnvironment()
+    private var _remoteAdUnitId: Map<String, String> = emptyMap()
+    private var _highFloorAdUnitId: Map<String, String> = emptyMap()
 
-    /**
-     * Must be called by host app once at startup.
-     * Prefer calling from `Application.onCreate()`.
-     */
-    fun configure(
-        provider: AdRemoteConfig,
-        environment: AdEnvironment = AdEnvironment()
-    ) {
-        this.remoteConfig = provider
-        this.environment = environment
-    }
+    private var _interstitialAdUnitIds: List<Map<String, String>> = emptyList()
+    private var _nativeAdUnitIds: List<Map<String, String>> = emptyList()
+    private var _defaultLowAdId: Map<String, String> = emptyMap()
+    private var _defaultHighAdId: Map<String, String> = emptyMap()
+    private var _disableAds = false
 
-    /** Backward-compatible alias. */
-    fun setRemoteConfigProvider(provider: AdRemoteConfig) {
-        configure(provider, environment)
-    }
+    var nonPreloadedAdUnitIds: List< String> = emptyList()
+    var notReloadAd: List< String> = emptyList()
+    var collapsibleBanner: List< String> = emptyList()
+    var renewAdList: List< String> = emptyList()
 
-    fun initialize() {
-        check(::remoteConfig.isInitialized) {
-            "AdClient.remoteConfig is not set. Call AdClient.configure() before initialize()."
-        }
+    private var _configPreventAdClick: Map<String, Any> = emptyMap()
+    var adClickCount = 0
+    var sessionStartTime: Long = 0
+    var disableStartTime: Long = 0
+    private var _disableAdsTemp = false
 
+    var adAppOpenPlaces: Map< String, Map<String, Any>> = emptyMap()
+    var adNativePlaces: Map< String, Map<String, Any>> = emptyMap()
+    var adInterPlaces: Map< String, Map<String, Any>> = emptyMap()
+    var adBannerPlaces: Map< String, Map<String, Any>> = emptyMap()
+
+    override fun reloadFromRemoteConfig() {
         _interstitialAdUnitIds = remoteConfig.getInterstitialAdUnitIds()
         _nativeAdUnitIds = remoteConfig.getNativeAdUnitIds()
         _defaultLowAdId = remoteConfig.getLowAdUnitIds()
         _defaultHighAdId = remoteConfig.getHighAdUnitIds()
         _disableAds = remoteConfig.isDisableAds()
-        _remoteAdUnitId = remoteConfig.getRemoteAdUnitId()
-        _highFloorAdUnitId = remoteConfig.getHighFloorAdUnitId()
-        collapsibleBanner = remoteConfig.getCollapsibleBanner()
 
-        // ad places are read by some managers/components
-        adAppOpenPlaces = remoteConfig.getAdPlacesAppOpen()
-        adNativePlaces = remoteConfig.getAdPlacesNative()
-        adInterPlaces = remoteConfig.getAdPlacesInterstitial()
-        adBannerPlaces = remoteConfig.getAdPlacesBanner()
+        _remoteAdUnitId = remoteConfig.getRemoteAdUnitId().mapKeys { (k, _) ->  k }
+        _highFloorAdUnitId = remoteConfig.getHighFloorAdUnitId().mapKeys { (k, _) ->  k }
+
+        collapsibleBanner = remoteConfig.getCollapsibleBanner().map {  it }
+
+        adAppOpenPlaces = remoteConfig.getAdPlacesAppOpen().mapKeys { (k, _) ->  k }
+        adNativePlaces = remoteConfig.getAdPlacesNative().mapKeys { (k, _) ->  k}
+        adInterPlaces = remoteConfig.getAdPlacesInterstitial().mapKeys { (k, _) ->  k }
+        adBannerPlaces = remoteConfig.getAdPlacesBanner().mapKeys { (k, _) ->  k }
 
         sessionStartTime = System.currentTimeMillis()
-
-        if (canDismissAds()) {
-            return
-        }
     }
 
-    fun reInitialize() {
-        initialize()
+    fun initialize() {
+        reloadFromRemoteConfig()
     }
 
-    fun canDismissAds(): Boolean {
-        // Host app can always override
-        if (environment.forceDisableAds) return true
+    fun reInitialize() = initialize()
 
+    override fun canDismissAds(): Boolean {
         if (_disableAdsTemp) {
             val disableTime =
                 (_configPreventAdClick["time_disable_ads_when_reached_max_ad_click"] as? Number)?.toLong()
@@ -152,99 +117,16 @@ object AdClient {
         return _disableAds
     }
 
-    fun getAdUnitId(adUnitName: AdUnitName): String {
-        // Use test ids when debugging
-        if (environment.isDebug) {
-            return _testAdUnitId[adUnitName] ?: ""
-        }
-
-        // Prefer remote config ids, fallback to bundled defaults
-        return _remoteAdUnitId[adUnitName]
-            ?: _defaultAdUnitId[adUnitName]
+    override fun getAdUnitId(key:  String): String {
+        return _remoteAdUnitId[key]
+            ?: _defaultAdUnitId[key]
+            ?: _testAdUnitId[key]
             ?: ""
     }
 
-    private val _testAdUnitId = mapOf(
-        AdUnitName.homeBanner to BANNER_TEST_ID,
-        AdUnitName.languageBanner to BANNER_TEST_ID,
-        AdUnitName.mapBanner to BANNER_TEST_ID,
-        AdUnitName.scanBanner to BANNER_TEST_ID,
-        AdUnitName.convertNative to NATIVE_TEST_ID,
-        AdUnitName.resultNative to NATIVE_TEST_ID,
-        AdUnitName.historyNative to NATIVE_TEST_ID,
-        AdUnitName.languageNative to NATIVE_TEST_ID,
-        AdUnitName.onboardNative to NATIVE_TEST_ID,
-        AdUnitName.onboardNative2 to NATIVE_TEST_ID,
-        AdUnitName.onboardFullNative to NATIVE_TEST_ID,
-        AdUnitName.settingNative to NATIVE_TEST_ID,
-        AdUnitName.scanSuccessNative to NATIVE_TEST_ID,
-        AdUnitName.customizeNative to NATIVE_TEST_ID,
-        AdUnitName.uninstallNative to NATIVE_TEST_ID,
-        AdUnitName.businessNative to NATIVE_TEST_ID,
-        AdUnitName.resultReward to REWARD_TEST_ID,
-        AdUnitName.resultInterstitial to INTERSTITIAL_TEST_ID,
-        AdUnitName.openInterstitial to INTERSTITIAL_TEST_ID,
-        AdUnitName.uninstallInterstitial to INTERSTITIAL_TEST_ID,
-        AdUnitName.premiumReward to REWARD_TEST_ID,
-        AdUnitName.globalOpen to OPEN_APP_TEST_ID,
-        AdUnitName.back to OPEN_APP_TEST_ID,
-        AdUnitName.convertInterstitial to INTERSTITIAL_TEST_ID
-    )
+    override fun getHighFloor(key:  String): String? = _highFloorAdUnitId[key]
 
-    private val _defaultAdUnitId = mapOf(
-        AdUnitName.homeBanner to "ca-app-pub-1939315010587936/4609791862",
-        AdUnitName.languageBanner to "ca-app-pub-1939315010587936/6215088392",
-        AdUnitName.mapBanner to "ca-app-pub-1939315010587936/9609591237",
-        AdUnitName.scanBanner to "ca-app-pub-1939315010587936/5276229011",
-        AdUnitName.convertNative to "ca-app-pub-1939315010587936/3296710194",
-        AdUnitName.resultNative to "ca-app-pub-1939315010587936/2994028680",
-        AdUnitName.historyNative to "ca-app-pub-4273999304863934/9876466654",
-        AdUnitName.languageNative to "ca-app-pub-1939315010587936/1983628522",
-        AdUnitName.onboardNative to "ca-app-pub-1939315010587936/7176816273",
-        AdUnitName.onboardNative2 to "ca-app-pub-1939315010587936/4418220171",
-        AdUnitName.onboardFullNative to "ca-app-pub-1939315010587936/4418220171",
-        AdUnitName.settingNative to "ca-app-pub-1939315010587936/1215172451",
-        AdUnitName.scanSuccessNative to "ca-app-pub-1939315010587936/9782031376",
-        AdUnitName.customizeNative to "ca-app-pub-1939315010587936/8558558976",
-        AdUnitName.uninstallNative to "ca-app-pub-1939315010587936/4037194148",
-        AdUnitName.businessNative to "ca-app-pub-1939315010587936/9782031376",
-        AdUnitName.resultReward to "ca-app-pub-4273999304863934/9297983788",
-        AdUnitName.resultInterstitial to "ca-app-pub-1939315010587936/7647589563",
-        AdUnitName.convertInterstitial to "ca-app-pub-1939315010587936/7044383511",
-        AdUnitName.openInterstitial to "ca-app-pub-1939315010587936/5750824001",
-        AdUnitName.uninstallInterstitial to "ca-app-pub-1939315010587936/8530972922",
-        AdUnitName.premiumReward to "ca-app-pub-1939315010587936/4138375654",
-        AdUnitName.globalOpen to "ca-app-pub-1939315010587936/7528170065",
-        AdUnitName.back to "ca-app-pub-1939315010587936/5711996253"
-    )
-
-    private var _remoteAdUnitId: Map<AdUnitName, String> = emptyMap()
-    private var _interstitialAdUnitIds: List<Map<String, String>> = emptyList()
-    private var _nativeAdUnitIds: List<Map<String, String>> = emptyList()
-    private var _defaultLowAdId: Map<String, String> = emptyMap()
-    private var _defaultHighAdId: Map<String, String> = emptyMap()
-    private var _disableAds = false
-    var nonPreloadedAdUnitIds: List<AdUnitName> = emptyList()
-    var notReloadAd: List<AdUnitName> = emptyList()
-    var collapsibleBanner: List<AdUnitName> = emptyList()
-    var renewAdList: List<AdUnitName> = emptyList()
-
-    // private lateinit var timer: Timer // Not used in init logic directly
-    private var _highFloorAdUnitId: Map<AdUnitName, String> = emptyMap()
-
-    // Assuming CtaRate is a data class you have defined
-    // private var _highFloorShowRate: Map<AdUnitName, CtaRate> = emptyMap() 
-    private var _configPreventAdClick: Map<String, Any> = emptyMap()
-    var adClickCount = 0
-    var sessionStartTime: Long = 0
-    var disableStartTime: Long = 0
-    private var _disableAdsTemp = false
-    var adAppOpenPlaces: Map<AdUnitName, Map<String, Any>> = emptyMap()
-    var adNativePlaces: Map<AdUnitName, Map<String, Any>> = emptyMap()
-    var adInterPlaces: Map<AdUnitName, Map<String, Any>> = emptyMap()
-    var adBannerPlaces: Map<AdUnitName, Map<String, Any>> = emptyMap()
-
-    fun notifyAdClick() {
+    override fun notifyAdClick() {
         val now = System.currentTimeMillis()
         val timePerSession =
             (_configPreventAdClick["time_per_session"] as? Number)?.toLong() ?: 300L
@@ -257,11 +139,9 @@ object AdClient {
                 adClickCount = 0
                 _disableAdsTemp = true
                 disableStartTime = System.currentTimeMillis()
-                // LocalStorage.premiumState = true // Mock
 
                 Handler(Looper.getMainLooper()).postDelayed({
                     _disableAdsTemp = false
-                    // LocalStorage.premiumState = false // Mock
                 }, 60000)
             }
         } else {
@@ -270,7 +150,7 @@ object AdClient {
         }
     }
 
-    fun getLowAdId(adType: AdType): String {
+    override fun getLowAdId(adType: AdType): String {
         return when (adType) {
             AdType.native -> _defaultLowAdId["native"] ?: NATIVE_TEST_ID
             AdType.banner -> _defaultLowAdId["banner"] ?: BANNER_TEST_ID
@@ -280,7 +160,7 @@ object AdClient {
         }
     }
 
-    fun getHighAdId(adType: AdType): String {
+    override fun getHighAdId(adType: AdType): String {
         return when (adType) {
             AdType.native -> _defaultHighAdId["native"] ?: NATIVE_TEST_ID
             AdType.banner -> _defaultHighAdId["banner"] ?: BANNER_TEST_ID
@@ -290,7 +170,8 @@ object AdClient {
         }
     }
 
-    fun getInterstitialId(): Map<String, String> {
+    /** Remote-config waterfall mapping: placement name -> id. */
+    override fun getInterstitialId(): Map<String, String> {
         val result = mutableMapOf<String, String>()
         for (element in _interstitialAdUnitIds) {
             element.keys.firstOrNull()?.let { key ->
@@ -302,7 +183,7 @@ object AdClient {
         return result
     }
 
-    fun getInterstitialPremium(): List<String> {
+    override fun getInterstitialPremium(): List<String> {
         val result = mutableListOf<String>()
         for (element in _interstitialAdUnitIds) {
             if (element["is_premium"] == "true") {
@@ -312,7 +193,8 @@ object AdClient {
         return result
     }
 
-    fun getNativeId(): Map<String, String> {
+    /** Remote-config waterfall mapping: placement name -> id. */
+    override fun getNativeId(): Map<String, String> {
         val result = mutableMapOf<String, String>()
         for (element in _nativeAdUnitIds) {
             element.keys.firstOrNull()?.let { key ->
@@ -324,19 +206,69 @@ object AdClient {
         return result
     }
 
-    fun isDisablePreload(adUnitName: AdUnitName): Boolean {
-        return nonPreloadedAdUnitIds.contains(adUnitName)
-    }
+    override fun isDisablePreload(key:  String): Boolean = nonPreloadedAdUnitIds.contains(key)
 
-    fun getOpenAppFailReloadTime(): Int = defaultOpenAppReloadAdTime
+    override fun getOpenAppFailReloadTime(): Int = defaultOpenAppReloadAdTime
 
-    fun getInterstitialAdFailReloadTime(): Int = defaultInterstitialAdReloadTime
+    override fun getInterstitialAdFailReloadTime(): Int = defaultInterstitialAdReloadTime
 
-    fun getRewardAdFailReloadTime(): Int = defaultRewardAdReloadTime
+    override fun getRewardAdFailReloadTime(): Int = defaultRewardAdReloadTime
 
-    fun getNativeAdReloadNewAdTime(): Int = defaultNativeRefreshNewAd
+    override fun getNativeAdReloadNewAdTime(): Int = defaultNativeRefreshNewAd
 
-    fun getHighFloor(adUnitName: AdUnitName): String? {
-        return _highFloorAdUnitId[adUnitName]
-    }
+    // Default test IDs (debug) keyed by placement key
+    private val _testAdUnitId: Map< String, String> = mapOf(
+//         Strings.HomeBanner to BANNER_TEST_ID,
+//         Strings.LanguageBanner to BANNER_TEST_ID,
+//         Strings.MapBanner to BANNER_TEST_ID,
+//         Strings.ScanBanner to BANNER_TEST_ID,
+//         Strings.ConvertNative to NATIVE_TEST_ID,
+//         Strings.ResultNative to NATIVE_TEST_ID,
+//         Strings.HistoryNative to NATIVE_TEST_ID,
+//         Strings.LanguageNative to NATIVE_TEST_ID,
+//         Strings.OnboardNative to NATIVE_TEST_ID,
+//         Strings.OnboardNative2 to NATIVE_TEST_ID,
+//         Strings.OnboardFullNative to NATIVE_TEST_ID,
+//         Strings.SettingNative to NATIVE_TEST_ID,
+//         Strings.ScanSuccessNative to NATIVE_TEST_ID,
+//         Strings.CustomizeNative to NATIVE_TEST_ID,
+//         Strings.UninstallNative to NATIVE_TEST_ID,
+//         Strings.BusinessNative to NATIVE_TEST_ID,
+//         Strings.ResultReward to REWARD_TEST_ID,
+//         Strings.ResultInterstitial to INTERSTITIAL_TEST_ID,
+//         Strings.OpenInterstitial to INTERSTITIAL_TEST_ID,
+//         Strings.UninstallInterstitial to INTERSTITIAL_TEST_ID,
+//         Strings.PremiumReward to REWARD_TEST_ID,
+//         Strings.GlobalOpen to OPEN_APP_TEST_ID,
+//         Strings.Back to OPEN_APP_TEST_ID,
+//         Strings.ConvertInterstitial to INTERSTITIAL_TEST_ID,
+    )
+
+    private val _defaultAdUnitId: Map< String, String> = mapOf(
+//         Strings.HomeBanner to "ca-app-pub-1939315010587936/4609791862",
+//         Strings.LanguageBanner to "ca-app-pub-1939315010587936/6215088392",
+//         Strings.MapBanner to "ca-app-pub-1939315010587936/9609591237",
+//         Strings.ScanBanner to "ca-app-pub-1939315010587936/5276229011",
+//         Strings.ConvertNative to "ca-app-pub-1939315010587936/3296710194",
+//         Strings.ResultNative to "ca-app-pub-1939315010587936/2994028680",
+//         Strings.HistoryNative to "ca-app-pub-4273999304863934/9876466654",
+//         Strings.LanguageNative to "ca-app-pub-1939315010587936/1983628522",
+//         Strings.OnboardNative to "ca-app-pub-1939315010587936/7176816273",
+//         Strings.OnboardNative2 to "ca-app-pub-1939315010587936/4418220171",
+//         Strings.OnboardFullNative to "ca-app-pub-1939315010587936/4418220171",
+//         Strings.SettingNative to "ca-app-pub-1939315010587936/1215172451",
+//         Strings.ScanSuccessNative to "ca-app-pub-1939315010587936/9782031376",
+//         Strings.CustomizeNative to "ca-app-pub-1939315010587936/8558558976",
+//         Strings.UninstallNative to "ca-app-pub-1939315010587936/4037194148",
+//         Strings.BusinessNative to "ca-app-pub-1939315010587936/9782031376",
+//         Strings.ResultReward to "ca-app-pub-4273999304863934/9297983788",
+//         Strings.ResultInterstitial to "ca-app-pub-1939315010587936/7647589563",
+//         Strings.ConvertInterstitial to "ca-app-pub-1939315010587936/7044383511",
+//         Strings.OpenInterstitial to "ca-app-pub-1939315010587936/5750824001",
+//         Strings.UninstallInterstitial to "ca-app-pub-1939315010587936/8530972922",
+//         Strings.PremiumReward to "ca-app-pub-1939315010587936/4138375654",
+//         Strings.GlobalOpen to "ca-app-pub-1939315010587936/7528170065",
+//         Strings.Back to "ca-app-pub-1939315010587936/5711996253",
+    )
 }
+

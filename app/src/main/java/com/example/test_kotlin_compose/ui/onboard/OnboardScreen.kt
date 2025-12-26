@@ -8,9 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.test_kotlin_compose.integration.adComponent.NativeAdComposable
-import com.example.test_kotlin_compose.integration.adManager.AdUnitName
 import com.example.test_kotlin_compose.ui.component.MyAppBar
 import com.example.test_kotlin_compose.ui.home.HomeViewModel
+import com.example.test_kotlin_compose.util.AdUnitKeys
 
 @Composable
 fun OnboardScreen(
@@ -31,14 +31,13 @@ fun OnboardScreen(
         content = { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
                 NativeAdComposable(
-                    adUnitName = AdUnitName.historyNative,
+                    adUnitKey = AdUnitKeys.HistoryNative,
                     factoryId = "adFactoryHistoryItem",
                     manager = nativeAdManager,
+                    adClient = viewModel.adClient,
                     modifier = Modifier,
-                    showLoadingCard = true,
-                    keepSize = false,
                     autoLoad = true,
-                    highFloor = true
+                    highFloor = true,
                 )
             }
         }

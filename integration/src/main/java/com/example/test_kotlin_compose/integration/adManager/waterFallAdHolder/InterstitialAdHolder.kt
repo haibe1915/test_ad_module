@@ -1,9 +1,12 @@
-package com.example.test_kotlin_compose.integration.adManager
+package com.example.test_kotlin_compose.integration.adManager.waterFallAdHolder
 
 import android.app.Activity
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import com.example.test_kotlin_compose.integration.adManager.AdClient
+import com.example.test_kotlin_compose.integration.adManager.impl.InterstialAdManagerImpl
+import com.example.test_kotlin_compose.integration.firebase.AdRemoteConfig
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -12,18 +15,16 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import java.util.Random
 
-class InterstitialAdPoolHolder(
+class InterstitialAdHolder(
     private val context: Context,
     private val manager: InterstialAdManagerImpl,
-    val adUnitIds: List<String>,
-    val adUnitNames: List<String>
+    val adUnitId: String,
+    private val remoteConfig: AdRemoteConfig,
+    private val adClient: AdClient,
 ) {
     var interstitialAd: InterstitialAd? = null
-    var chosenIndex = -1
-
     private var expireHandler: Handler? = null
     private var expireRunnable: Runnable? = null
-
     var retryTime = 0
     var pause = false
 
@@ -35,14 +36,9 @@ class InterstitialAdPoolHolder(
     }
 
     fun loadAd() {
-        if (AdClient.canDismissAds()) {
+        if (adClient.canDismissAds()) {
             return
         }
-
-        val index = Random().nextInt(adUnitNames.size)
-        val adUnitId = adUnitIds[index]
-        // val adUnitName = adUnitNames[index]
-
         manager.addLoadingAd(adUnitId)
 
         InterstitialAd.load(
@@ -52,34 +48,46 @@ class InterstitialAdPoolHolder(
             object : InterstitialAdLoadCallback() {
                 override fun onAdLoaded(ad: InterstitialAd) {
                     interstitialAd = ad
-                    chosenIndex = index
                     manager.removeLoadingAd(adUnitId)
                     retryTime = 0
 
+                    // Cancel existing expiration timer
                     expireHandler?.removeCallbacksAndMessages(null)
+
+                    // Set new expiration timer (1 hour)
                     expireRunnable = Runnable {
                         interstitialAd = null
                         expireHandler = null
                         loadAd()
                     }
                     expireHandler = Handler(Looper.getMainLooper())
-                    expireHandler?.postDelayed(expireRunnable!!, 3600000) // 1 hour
+                    expireHandler?.postDelayed(expireRunnable!!, 3600000)
+
+                    // Flash Offer / Premium Logic would go here
+                    /*
+                    if (prem && ...) {
+                         // Show premium dialog
+                    }
+                    */
                 }
 
                 override fun onAdFailedToLoad(error: LoadAdError) {
                     if (pause) return
 
-                    val maxRetry = 3
+                    // Assuming RemoteConfig has maxRetry, defaulting to 3
+                    val maxRetry = remoteConfig.getMaxRetry()
                     if (retryTime >= maxRetry) {
                         manager.removeLoadingAd(adUnitId)
                         return
                     }
+
                     retryTime++
 
+                    // Calculate backoff time based on manager's config
                     val config = manager.getWaterfallReloadTime()
-                    val baseTime = (config["base_time"] as? Int) ?: 1000
-                    val addTime = (config["add_time"] as? Int) ?: 1000
-                    val maxTime = (config["max"] as? Int) ?: 10000
+                    val baseTime = (config["base_time"] as? Number)?.toInt() ?: 1000
+                    val addTime = (config["add_time"] as? Number)?.toInt() ?: 1000
+                    val maxTime = (config["max"] as? Number)?.toInt() ?: 10000
 
                     val reloadTime = baseTime + retryTime * addTime
                     val finalDelay = if (reloadTime > maxTime) {
@@ -100,13 +108,13 @@ class InterstitialAdPoolHolder(
         activity: Activity,
         callback: (() -> Unit)? = null,
         failedCallBack: (() -> Unit)? = null,
-        dismissAdCallback: (() -> Unit)? = null
+        dismissAdCallback: (() -> Unit)? = null,
     ) {
         if (interstitialAd == null) return
 
         interstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdShowedFullScreenContent() {
-                // Log
+                // Log ad showed
             }
 
             override fun onAdFailedToShowFullScreenContent(adError: AdError) {
@@ -116,6 +124,7 @@ class InterstitialAdPoolHolder(
             }
 
             override fun onAdDismissedFullScreenContent() {
+                // AdmodAppOpenAdManager.isDisable = true // Handle Open Ad logic if needed
                 dismissAdCallback?.invoke()
                 manager.onCallback(callback, dismissAdCallback)
                 manager.updateShowedTime()
@@ -124,9 +133,14 @@ class InterstitialAdPoolHolder(
             }
 
             override fun onAdClicked() {
+                // AdmodAppOpenAdManager.isDisable = true
                 manager.onCallback(callback, dismissAdCallback)
-                AdClient.notifyAdClick()
+                adClient.notifyAdClick()
             }
+        }
+
+        interstitialAd?.setOnPaidEventListener {
+            // TODO: hook revenue callback if needed
         }
 
         interstitialAd?.show(activity)

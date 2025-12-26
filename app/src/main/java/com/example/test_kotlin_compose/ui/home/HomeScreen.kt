@@ -8,9 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.test_kotlin_compose.integration.adComponent.NativeAdComposable
-import com.example.test_kotlin_compose.integration.adManager.AdUnitName
 import com.example.test_kotlin_compose.ui.component.MyAppBar
-import com.example.test_kotlin_compose.ui.language.LanguageViewModel
+import com.example.test_kotlin_compose.util.AdUnitKeys
 
 @Composable
 fun HomeScreen(
@@ -32,12 +31,11 @@ fun HomeScreen(
         content = { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
                 NativeAdComposable(
-                    adUnitName = AdUnitName.convertNative,
+                    adUnitKey = AdUnitKeys.ConvertNative,
                     factoryId = "adFactoryConvert",
                     manager = nativeAdManager,
+                    adClient = viewModel.adClient,
                     modifier = Modifier,
-                    showLoadingCard = true,
-                    keepSize = false,
                     autoLoad = true,
                     highFloor = true
                 )
