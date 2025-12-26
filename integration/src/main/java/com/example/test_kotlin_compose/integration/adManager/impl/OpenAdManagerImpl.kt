@@ -242,7 +242,7 @@ class OpenAdManagerImpl @Inject constructor(
         val highFloorAdUnitId = adClient.getHighFloor(adUnitKey)
 
         val currentAdUnitId =
-            if (isHighFloor == true && highFloorAdUnitId != null) highFloorAdUnitId else adUnitId
+            if (isHighFloor == true && highFloorAdUnitId?.isNotEmpty() ?: false) highFloorAdUnitId else adUnitId
 
         val request = AdRequest.Builder().build()
 

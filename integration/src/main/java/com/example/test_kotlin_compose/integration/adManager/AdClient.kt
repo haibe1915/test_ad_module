@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import com.example.test_kotlin_compose.integration.adManager.api.AdClientGateway
 import com.example.test_kotlin_compose.integration.firebase.AdRemoteConfig
+import com.example.test_kotlin_compose.integration.config.AdsIdType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -53,8 +54,8 @@ class AdClient @Inject constructor(
     @ApplicationContext private val context: Context,
 ) : AdClientGateway {
 
-    private var _remoteAdUnitId: Map<String, String> = emptyMap()
-    private var _highFloorAdUnitId: Map<String, String> = emptyMap()
+
+    private var adsId: Map<String, AdsIdType> = emptyMap()
 
     private var _interstitialAdUnitIds: List<Map<String, String>> = emptyList()
     private var _nativeAdUnitIds: List<Map<String, String>> = emptyList()
@@ -85,8 +86,7 @@ class AdClient @Inject constructor(
         _defaultHighAdId = remoteConfig.getHighAdUnitIds()
         _disableAds = remoteConfig.isDisableAds()
 
-        _remoteAdUnitId = remoteConfig.getRemoteAdUnitId().mapKeys { (k, _) ->  k }
-        _highFloorAdUnitId = remoteConfig.getHighFloorAdUnitId().mapKeys { (k, _) ->  k }
+        adsId = remoteConfig.getRemoteAdUnitId().mapKeys { (k, _) ->  k }
 
         collapsibleBanner = remoteConfig.getCollapsibleBanner().map {  it }
 
@@ -118,13 +118,13 @@ class AdClient @Inject constructor(
     }
 
     override fun getAdUnitId(key:  String): String {
-        return _remoteAdUnitId[key]
+        return adsId[key]?.lowId
             ?: _defaultAdUnitId[key]
             ?: _testAdUnitId[key]
             ?: ""
     }
 
-    override fun getHighFloor(key:  String): String? = _highFloorAdUnitId[key]
+    override fun getHighFloor(key:  String): String? = adsId[key]?.highId
 
     override fun notifyAdClick() {
         val now = System.currentTimeMillis()
@@ -215,6 +215,26 @@ class AdClient @Inject constructor(
     override fun getRewardAdFailReloadTime(): Int = defaultRewardAdReloadTime
 
     override fun getNativeAdReloadNewAdTime(): Int = defaultNativeRefreshNewAd
+
+//    override fun setNativeAdsPositionKeys(keyList: List<String>) {
+//        nativeAdsPositionKeys = keyList
+//    }
+//
+//    override fun setInterstitialAdsPositionKeys(keyList: List<String>) {
+//        interstitialAdsPositionKeys = keyList
+//    }
+//
+//    override fun setOpenAdsPositionKeys(keyList: List<String>) {
+//        openAdsPositionKeys = keyList
+//    }
+//
+//    override fun setBannerAdsPositionKeys(keyList: List<String>) {
+//        bannerAdsPositionKeys = keyList
+//    }
+//
+//    override fun setRewardAdsPositionKeys(keyList: List<String>) {
+//        rewardAdsPositionKeys = keyList
+//    }
 
     // Default test IDs (debug) keyed by placement key
     private val _testAdUnitId: Map< String, String> = mapOf(

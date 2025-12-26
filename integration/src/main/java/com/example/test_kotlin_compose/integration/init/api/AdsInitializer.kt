@@ -1,5 +1,6 @@
 package com.example.test_kotlin_compose.integration.init.api
 
+import android.app.Activity
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 
@@ -12,6 +13,14 @@ interface AdsInitializer {
     /**
      * Idempotent init.
      */
-    suspend fun initialize(context: Context, externalScope: CoroutineScope)
+    suspend fun initialize(
+        activity: Activity,externalScope: CoroutineScope,
+        nativeAdsKeys: List<String>,
+        bannerAdsKeys: List<String>,
+        interstitialAdsKeys: List<String>,
+        rewardAdsKeys: List<String>,
+        openAdsKeys: List<String>
+
+    )
 
 }

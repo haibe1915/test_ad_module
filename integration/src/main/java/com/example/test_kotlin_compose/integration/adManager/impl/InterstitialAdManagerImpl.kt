@@ -92,7 +92,7 @@ class InterstialAdManagerImpl @Inject constructor(
         delayTime = adClient.getInterstitialAdFailReloadTime()
         adInterPremium = adClient.getInterstitialPremium()
 
-        waterfallApply = remoteConfig.getWaterfallApply()
+        waterfallApply = false
         newLoadingMode = remoteConfig.getWaterfallLoadingMode() == 1
 
         priorityOrder = mutableListOf<String>().apply {
@@ -739,7 +739,7 @@ class InterstialAdManagerImpl @Inject constructor(
      * - A pool holder for randomized selection (new loading mode)
      */
     override suspend fun loadWaterFall() {
-        waterfallApply = remoteConfig.getWaterfallApply()
+        waterfallApply = false
         newLoadingMode = remoteConfig.getWaterfallLoadingMode() == 1
 
         if (waterfallApply && interstitialAdHolderUnitIds.isEmpty()) {

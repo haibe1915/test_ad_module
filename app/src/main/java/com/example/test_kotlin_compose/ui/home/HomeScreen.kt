@@ -31,7 +31,7 @@ fun HomeScreen(
         content = { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
                 NativeAdComposable(
-                    adUnitKey = AdUnitKeys.ConvertNative,
+                    adUnitKey = AdUnitKeys.NativeCommon,
                     factoryId = "adFactoryConvert",
                     manager = nativeAdManager,
                     adClient = viewModel.adClient,

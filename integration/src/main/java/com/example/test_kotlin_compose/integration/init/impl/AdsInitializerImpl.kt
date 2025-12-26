@@ -9,6 +9,11 @@ import com.example.test_kotlin_compose.integration.adManager.impl.InterstialAdMa
 import com.example.test_kotlin_compose.integration.adManager.impl.NativeAdManagerImpl
 import com.example.test_kotlin_compose.integration.adManager.impl.OpenAdManagerImpl
 import com.example.test_kotlin_compose.integration.adManager.impl.RewardAdManagerImpl
+import com.example.test_kotlin_compose.integration.config.bannerAdsPositionKeys
+import com.example.test_kotlin_compose.integration.config.interstitialAdsPositionKeys
+import com.example.test_kotlin_compose.integration.config.nativeAdsPositionKeys
+import com.example.test_kotlin_compose.integration.config.openAdsPositionKeys
+import com.example.test_kotlin_compose.integration.config.rewardAdsPositionKeys
 import com.example.test_kotlin_compose.integration.init.api.AdsInitializer
 import com.google.android.gms.ads.MobileAds
 import com.google.android.ump.ConsentRequestParameters
@@ -50,13 +55,27 @@ class AdsInitializerImpl @Inject constructor(
         }
     }
 
-    override suspend fun initialize(context: Context, externalScope: CoroutineScope) {
+    override suspend fun initialize(
+        activity: Activity,
+        externalScope: CoroutineScope,
+        nativeAdsKeys: List<String>,
+        bannerAdsKeys: List<String>,
+        interstitialAdsKeys: List<String>,
+        rewardAdsKeys: List<String>,
+        openAdsKeys: List<String>
+    ) {
         if (initialized) return
         initialized = true
 
         externalScope.launch {
+            nativeAdsPositionKeys = nativeAdsKeys
+            bannerAdsPositionKeys = bannerAdsKeys
+            interstitialAdsPositionKeys = interstitialAdsKeys
+            rewardAdsPositionKeys = rewardAdsKeys
+            openAdsPositionKeys = openAdsKeys
+
             val remoteConfigJob = async { adClient.reloadFromRemoteConfig() }
-            val cmpJob = async { checkConsent(context as Activity) }
+            val cmpJob = async { checkConsent(activity) }
 
             awaitAll(remoteConfigJob, cmpJob)
 

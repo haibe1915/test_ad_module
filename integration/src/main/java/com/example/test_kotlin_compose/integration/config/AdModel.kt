@@ -1,4 +1,4 @@
-package com.example.test_kotlin_compose.integration.model
+package com.example.test_kotlin_compose.integration.config
 
 enum class CallToActionStyle {
     Fill,
@@ -79,3 +79,5 @@ data class OpenAppAdConfig(
     val timeRefreshInterval: Int? = null,
     val rateRequestHighId: List<List<Any>>? = null,
 )
+
+

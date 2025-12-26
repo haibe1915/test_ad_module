@@ -76,7 +76,7 @@ fun LanguageScreen(
                             onClick = {
                                 val activity = context as? Activity
                                 if (activity != null) {
-                                    interstitialAdManager.preloadAd(adUnitKey = AdUnitKeys.ConvertInterstitial)
+                                    interstitialAdManager.preloadAd(adUnitKey = AdUnitKeys.InterCommon)
                                 }
                             }
                         ) {
@@ -88,7 +88,7 @@ fun LanguageScreen(
                                 if (activity != null) {
                                     interstitialAdManager.show(
                                         activity,
-                                        adUnitKey = AdUnitKeys.ConvertInterstitial,
+                                        adUnitKey = AdUnitKeys.InterCommon,
                                         callback = null,
                                         null,
                                         null,
@@ -106,7 +106,7 @@ fun LanguageScreen(
                                 if (activity != null) {
                                     interstitialAdManager.loadAdAndShow(
                                         activity,
-                                        adUnitKey = AdUnitKeys.ConvertInterstitial,
+                                        adUnitKey = AdUnitKeys.InterCommon,
                                         callback = null,
                                         null,
                                         5000,
@@ -121,7 +121,7 @@ fun LanguageScreen(
                             onClick = {
                                 val activity = context as? Activity
                                 if (activity != null) {
-                                    openAdManager.preloadAd(adUnitKey = AdUnitKeys.GlobalOpen)
+                                    openAdManager.preloadAd(adUnitKey = AdUnitKeys.AppOpenOpenApp)
                                 }
                             }
                         ) {
@@ -133,7 +133,7 @@ fun LanguageScreen(
                                 if (activity != null) {
                                     openAdManager.showAdIfAvailable(
                                         activity,
-                                        adUnitKey = AdUnitKeys.GlobalOpen,
+                                        adUnitKey = AdUnitKeys.AppOpenOpenApp,
                                         {}
                                     )
                                 }
@@ -147,7 +147,7 @@ fun LanguageScreen(
                                 if (activity != null) {
                                     openAdManager.loadAdAndShow(
                                         activity,
-                                        adUnitKey = AdUnitKeys.GlobalOpen,
+                                        adUnitKey = AdUnitKeys.AppOpenOpenApp,
                                         null,
                                         null,
                                         5000
@@ -158,54 +158,54 @@ fun LanguageScreen(
                         ) {
                             Text("Load And Show Open Ad")
                         }
-                        Button(
-                            onClick = {
-                                val activity = context as? Activity
-                                if (activity != null) {
-                                    rewardAdManager.preloadAd(adUnitKey = AdUnitKeys.ResultReward)
-                                }
-                            }
-                        ) {
-                            Text("Preload Reward Ad")
-                        }
-                        Button(
-                            onClick = {
-                                val activity = context as? Activity
-                                if (activity != null) {
-                                    rewardAdManager.showAd(
-                                        activity,
-                                        adUnitKey = AdUnitKeys.ResultReward,
-                                        onUserEarnedReward = { reward ->
-                                            // Handle reward
-                                        }
-                                    )
-                                }
-                            }
-                        ) {
-                            Text("Show Reward Ad")
-                        }
-                        Button(
-                            onClick = {
-                                val activity = context as? Activity
-                                if (activity != null) {
-                                    rewardAdManager.loadAdAndShow(
-                                        activity,
-                                        adUnitKey = AdUnitKeys.ResultReward,
-                                        onUserEarnedReward = { reward ->
-                                            // Handle reward
-                                        },
-                                        duration = 5000
-                                    )
-                                }
-                            }
-                        ) {
-                            Text("Load And Show Reward Ad")
-                        }
+//                        Button(
+//                            onClick = {
+//                                val activity = context as? Activity
+//                                if (activity != null) {
+//                                    rewardAdManager.preloadAd(adUnitKey = AdUnitKeys.ResultReward)
+//                                }
+//                            }
+//                        ) {
+//                            Text("Preload Reward Ad")
+//                        }
+//                        Button(
+//                            onClick = {
+//                                val activity = context as? Activity
+//                                if (activity != null) {
+//                                    rewardAdManager.showAd(
+//                                        activity,
+//                                        adUnitKey = AdUnitKeys.ResultReward,
+//                                        onUserEarnedReward = { reward ->
+//                                            // Handle reward
+//                                        }
+//                                    )
+//                                }
+//                            }
+//                        ) {
+//                            Text("Show Reward Ad")
+//                        }
+//                        Button(
+//                            onClick = {
+//                                val activity = context as? Activity
+//                                if (activity != null) {
+//                                    rewardAdManager.loadAdAndShow(
+//                                        activity,
+//                                        adUnitKey = AdUnitKeys.ResultReward,
+//                                        onUserEarnedReward = { reward ->
+//                                            // Handle reward
+//                                        },
+//                                        duration = 5000
+//                                    )
+//                                }
+//                            }
+//                        ) {
+//                            Text("Load And Show Reward Ad")
+//                        }
                     }
                 }
 
                 NativeAdComposable(
-                    adUnitKey = AdUnitKeys.LanguageNative,
+                    adUnitKey = AdUnitKeys.NativeCommon,
                     factoryId = "adFactoryLanguage",
                     manager = nativeAdManager,
                     adClient = viewModel.adClient,
@@ -219,14 +219,14 @@ fun LanguageScreen(
                         .fillMaxWidth()
                 ) {
                 }
-                BannerAdComposable(
-                    adUnitKey = AdUnitKeys.LanguageBanner,
-                    adClient = viewModel.adClient,
-                    showLoadingCard = true,
-                    keepSize = false,
-                    retryNumber = 3,
-                    adManager = bannerAdManager
-                )
+//                BannerAdComposable(
+//                    adUnitKey = AdUnitKeys.LanguageBanner,
+//                    adClient = viewModel.adClient,
+//                    showLoadingCard = true,
+//                    keepSize = false,
+//                    retryNumber = 3,
+//                    adManager = bannerAdManager
+//                )
             }
         }
     )

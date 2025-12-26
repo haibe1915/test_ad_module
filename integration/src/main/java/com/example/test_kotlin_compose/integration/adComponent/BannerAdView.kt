@@ -56,7 +56,7 @@ fun BannerAdComposable(
         } else {
             // Create and load new ad
             val newAdView = AdView(context)
-            newAdView.setAdSize(adManager.createAdSize(adUnitKey))
+            newAdView.setAdSize(adManager.createAdSize())
             newAdView.adUnitId = adClient.getAdUnitId(adUnitKey)
 
             val extras = adManager.getCollapsibleExtras(adUnitKey)

@@ -206,93 +206,181 @@
         <value>true</value>
     </entry>
     <entry>
-        <key>ad_unit_ids</key>
-        <value>
-            {
-            "homeBanner": "ca-app-pub-1939315010587936/4609791862",
-            "languageBanner": "ca-app-pub-1939315010587936/6215088392",
-            "mapBanner": "ca-app-pub-1939315010587936/9609591237",
-            "scanBanner": "ca-app-pub-1939315010587936/5276229011",
-            "convertNative": "ca-app-pub-1939315010587936/3296710194",
-            "resultNative": "ca-app-pub-1939315010587936/2994028680",
-            "historyNative": "ca-app-pub-4273999304863934/9876466654",
-            "languageNative": "ca-app-pub-1939315010587936/1983628522",
-            "onboardNative": "ca-app-pub-1939315010587936/7176816273",
-            "onboardNative2": "ca-app-pub-1939315010587936/4418220171",
-            "onboardFullNative": "ca-app-pub-1939315010587936/4418220171",
-            "settingNative": "ca-app-pub-1939315010587936/1215172451",
-            "scanSuccessNative": "ca-app-pub-1939315010587936/9782031376",
-            "businessNative": "ca-app-pub-1939315010587936/9782031376",
-            "customizeNative": "ca-app-pub-1939315010587936/8558558976",
-            "uninstallNative": "ca-app-pub-1939315010587936/4037194148",
-            "resultReward": "ca-app-pub-4273999304863934/9297983788",
-            "resultInterstitial": "ca-app-pub-1939315010587936/7044383511",
-            "convertInterstitial": "ca-app-pub-1939315010587936/7044383511",
-            "openInterstitial": "ca-app-pub-1939315010587936/5750824001",
-            "uninstallInterstitial": "ca-app-pub-1939315010587936/8530972922",
-            "premiumReward": "ca-app-pub-1939315010587936/4138375654",
-            "globalOpen": "ca-app-pub-1939315010587936/7528170065",
-            "back": "ca-app-pub-1939315010587936/5711996253"
+        <key>native_common</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/2494270893",
+            "high_id": ""
             }
         </value>
     </entry>
+
     <entry>
-        <key>ad_unit_ids</key>
-        <value>
-            {
-            "homeBanner": "ca-app-pub-1939315010587936/4609791862",
-            "languageBanner": "ca-app-pub-1939315010587936/6215088392",
-            "mapBanner": "ca-app-pub-1939315010587936/9609591237",
-            "scanBanner": "ca-app-pub-1939315010587936/5276229011",
-            "convertNative": "ca-app-pub-1939315010587936/3296710194",
-            "resultNative": "ca-app-pub-1939315010587936/2994028680",
-            "historyNative": "ca-app-pub-4273999304863934/9876466654",
-            "languageNative": "ca-app-pub-1939315010587936/1983628522",
-            "onboardNative": "ca-app-pub-1939315010587936/7176816273",
-            "onboardNative2": "ca-app-pub-1939315010587936/4418220171",
-            "onboardFullNative": "ca-app-pub-1939315010587936/4418220171",
-            "settingNative": "ca-app-pub-1939315010587936/1215172451",
-            "scanSuccessNative": "ca-app-pub-1939315010587936/9782031376",
-            "businessNative": "ca-app-pub-1939315010587936/9782031376",
-            "customizeNative": "ca-app-pub-1939315010587936/8558558976",
-            "uninstallNative": "ca-app-pub-1939315010587936/4037194148",
-            "resultReward": "ca-app-pub-4273999304863934/9297983788",
-            "resultInterstitial": "ca-app-pub-1939315010587936/7044383511",
-            "convertInterstitial": "ca-app-pub-1939315010587936/7044383511",
-            "openInterstitial": "ca-app-pub-1939315010587936/5750824001",
-            "uninstallInterstitial": "ca-app-pub-1939315010587936/8530972922",
-            "premiumReward": "ca-app-pub-1939315010587936/4138375654",
-            "globalOpen": "ca-app-pub-1939315010587936/7528170065",
-            "back": "ca-app-pub-1939315010587936/5711996253"
+        <key>native_popup_country</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/6262211232",
+            "high_id": ""
             }
         </value>
     </entry>
+
     <entry>
-        <key>high_floor_ad_unit</key>
-        <value>
-            {
-            "globalOpen": "ca-app-pub-1939315010587936/2549276718",
-            "back": "ca-app-pub-1939315010587936/5255105767",
-            "languageNative": "ca-app-pub-1939315010587936/1924489597",
-            "convertNative": "ca-app-pub-1939315010587936/7589009118",
-            "onboardNative": "ca-app-pub-1939315010587936/8049818705",
-            "onboardNative2": "ca-app-pub-1939315010587936/3649764103",
-            "onboardFullNative": "ca-app-pub-1939315010587936/3649764103",
-            "settingNative": "ca-app-pub-1939315010587936/9583782911",
-            "resultNative": "ca-app-pub-1939315010587936/1003299325",
-            "uninstallNative": "ca-app-pub-1939315010587936/6546671940",
-            "scanSuccessNative": "ca-app-pub-1939315010587936/7589009118",
-            "businessNative": "ca-app-pub-1939315010587936/6546671940",
-            "customizeNative": "ca-app-pub-1939315010587936/7586282296",
-            "resultInterstitial": "ca-app-pub-1939315010587936/4331456230",
-            "convertInterstitial": "ca-app-pub-1939315010587936/4331456230",
-            "openInterstitial": "ca-app-pub-1939315010587936/2353217044",
-            "uninstallInterstitial": "ca-app-pub-1939315010587936/2416990714",
-            "premiumReward": "ca-app-pub-1939315010587936/7694477281",
-            "homeBanner": "ca-app-pub-1939315010587936/9962761715",
-            "languageBanner": "ca-app-pub-1939315010587936/3018374560",
-            "mapBanner": "ca-app-pub-1939315010587936/6521652647",
-            "scanBanner": "ca-app-pub-1939315010587936/1914972036"
+        <key>native_onboard_screen</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/6548564960",
+            "high_id": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_history_screen</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/2494270893",
+            "high_id": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_text_screen</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/2494270893",
+            "high_id": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_document_translate</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/1603360044",
+            "high_id": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_setting_screen</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/3715853227",
+            "high_id": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_camera_screen</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/5547895363",
+            "high_id": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_save_document</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/2067831264",
+            "high_id": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_screen_translate_screen</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/2494270893",
+            "high_id": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_conversation_screen</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/2494270893",
+            "high_id": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_ad_warning</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/2258937332",
+            "high_id": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_pick_file_screen</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/2494270893",
+            "high_id": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_process_translate_file</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/2494270893",
+            "high_id": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>app_open_back</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/4716430937",
+            "high_id": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>app_open_open_app</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/3154108533",
+            "high_id": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>inter_common</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/7575292903",
+            "high_id": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>inter_back</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/5220506581",
+            "high_id": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>inter_after_translate_screen</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/6860977037",
+            "high_id": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>inter_open_app</key>
+        <value>{
+            "low_id": "ca-app-pub-4273999304863934/8373031220",
+            "high_id": ""
             }
         </value>
     </entry>

@@ -1,5 +1,7 @@
 package com.example.test_kotlin_compose.integration.firebase
 
+import com.example.test_kotlin_compose.integration.config.AdsIdType
+
 interface AdRemoteConfig {
 
     /** Global kill-switch for ads from remote config. */
@@ -21,7 +23,7 @@ interface AdRemoteConfig {
     fun getHighFloorAdUnitId(): Map<String, String>
 
     /** Remote-config ad unit ids for fixed placements. Key = placement name. */
-    fun getRemoteAdUnitId(): Map<String, String>
+    fun getRemoteAdUnitId(): Map<String, AdsIdType>
 
     /** Waterfall floor ids per format. */
     fun getLowAdUnitIds(): Map<String, String>

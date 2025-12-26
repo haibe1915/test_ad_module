@@ -205,4 +205,185 @@
 
         <value>true</value>
     </entry>
+
+    <entry>
+        <key>native_common</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/2494270893",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_popup_country</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/6262211232",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_onboard_screen</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/6548564960",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_history_screen</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/2494270893",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_text_screen</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/2494270893",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_document_translate</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/1603360044",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_setting_screen</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/3715853227",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_camera_screen</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/5547895363",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_save_document</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/2067831264",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_screen_translate_screen</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/2494270893",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_conversation_screen</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/2494270893",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_ad_warning</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/2258937332",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_pick_file_screen</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/2494270893",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>native_process_translate_file</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/2494270893",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>app_open_back</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/4716430937",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>app_open_open_app</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/3154108533",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>inter_common</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/7575292903",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>inter_back</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/5220506581",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>inter_after_translate_screen</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/6860977037",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
+    <entry>
+        <key>inter_open_app</key>
+        <value>{
+            "lowId": "ca-app-pub-4273999304863934/8373031220",
+            "highId": ""
+            }
+        </value>
+    </entry>
+
 </defaultsMap>

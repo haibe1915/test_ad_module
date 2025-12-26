@@ -3,7 +3,15 @@ package com.example.test_kotlin_compose.firebase
 import android.content.Context
 import com.example.test_kotlin_compose.R
 import com.example.test_kotlin_compose.config.RemoteConfigProvider
+import com.example.test_kotlin_compose.integration.adManager.AdClient
 import com.example.test_kotlin_compose.integration.firebase.AdRemoteConfig
+import com.example.test_kotlin_compose.integration.config.AdsIdRemoteConfig
+import com.example.test_kotlin_compose.integration.config.AdsIdType
+import com.example.test_kotlin_compose.integration.config.bannerAdsPositionKeys
+import com.example.test_kotlin_compose.integration.config.interstitialAdsPositionKeys
+import com.example.test_kotlin_compose.integration.config.nativeAdsPositionKeys
+import com.example.test_kotlin_compose.integration.config.openAdsPositionKeys
+import com.example.test_kotlin_compose.integration.config.rewardAdsPositionKeys
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfig
@@ -95,35 +103,81 @@ class FirebaseRemoteConfigProvider @Inject constructor(
         return if (map.isEmpty()) mapOf("show_inter_when_switch_page" to false) else map
     }
 
-    override fun getConfigScreenLanguage(): Map<String, Any> = parseJsonToMap("config_screen_language")
+    override fun getConfigScreenLanguage(): Map<String, Any> =
+        parseJsonToMap("config_screen_language")
+
     override fun getConfigScreenSplash(): Map<String, Any> = parseJsonToMap("config_screen_splash")
-    override fun getConfigScreenOnboard(): Map<String, Any> = parseJsonToMap("config_screen_onboard")
+    override fun getConfigScreenOnboard(): Map<String, Any> =
+        parseJsonToMap("config_screen_onboard")
+
     override fun getConfigScreenScan(): Map<String, Any> = parseJsonToMap("config_screen_scan")
     override fun getConfigScreenResult(): Map<String, Any> = parseJsonToMap("config_screen_result")
-    override fun getConfigPreventAdClick(): Map<String, Any> = parseJsonToMap("config_prevent_ad_click")
+    override fun getConfigPreventAdClick(): Map<String, Any> =
+        parseJsonToMap("config_prevent_ad_click")
 
     override fun getReloadTime(): Map<String, Any> = parseJsonToMap("reload_time")
 
-    override fun getConfigAdInterstitial(): Map<String, Any> = parseJsonToMap("config_ads_interstitial")
+    override fun getConfigAdInterstitial(): Map<String, Any> =
+        parseJsonToMap("config_ads_interstitial")
+
     override fun getConfigAdReward(): Map<String, Any> = parseJsonToMap("config_ads_reward")
     override fun getConfigAdNative(): Map<String, Any> = parseJsonToMap("config_ads_native")
     override fun getConfigAdBanner(): Map<String, Any> = parseJsonToMap("config_ads_banner")
     override fun getConfigAdAppOpen(): Map<String, Any> = parseJsonToMap("config_ads_app_open")
 
-    override fun getRemoteAdUnitId(): Map<String, String> {
-        val jsonString = getString("ad_unit_ids")
-        val result = mutableMapOf<String, String>()
-        try {
-            val jsonObject = JSONObject(jsonString)
-            jsonObject.keys().forEach { key ->
-                result[key] = jsonObject.getString(key)
+    override fun getRemoteAdUnitId(): Map<String, AdsIdType> {
+        val adKeys: List<String> =
+            openAdsPositionKeys +
+                    nativeAdsPositionKeys +
+                    bannerAdsPositionKeys +
+                    interstitialAdsPositionKeys +
+                    rewardAdsPositionKeys
+
+
+        val result = mutableMapOf<String, AdsIdType>()
+        adKeys.forEach { adkey ->
+            val valueRemote = getString(adkey)
+            if (valueRemote.isEmpty()) {
+                return@forEach
             }
-        } catch (_: Exception) {
+            try {
+                val stringValue = parseJsonToMap(adkey)
+                if (stringValue.isEmpty()) {
+                    return@forEach
+                }
+                val adsIdRemote = AdsIdRemoteConfig(
+                    referenceConfigKey = stringValue["reference_config_key"] as? String? ?: "",
+                    lowIdName = stringValue["low_id_name"] as? String? ?: "",
+                    lowId = stringValue["low_id"] as? String? ?: "",
+                    highIdName = stringValue["high_id_name"] as? String? ?: "",
+                    highId = stringValue["high_id"] as? String? ?: "",
+                )
+
+
+
+                result[adkey] = AdsIdType(
+                    lowId = adsIdRemote.lowId ?: "",
+                    highId = adsIdRemote.highId ?: ""
+                )
+
+                if (adsIdRemote.referenceConfigKey?.isNotEmpty() ?: false) {
+                    result[adkey] = result[adsIdRemote.referenceConfigKey] ?: return@forEach
+                    return@forEach
+                }
+
+                println("abcd")
+
+            } catch (e: Exception) {
+                return@forEach
+            }
         }
+
+
         return result
     }
 
     override fun getHighFloorAdUnitId(): Map<String, String> {
+
         val jsonString = getString("high_floor_ad_unit")
         val result = mutableMapOf<String, String>()
         try {
@@ -140,19 +194,26 @@ class FirebaseRemoteConfigProvider @Inject constructor(
 
     override fun getHighAdUnitIds(): Map<String, String> = parseJsonToStringMap("ads_wf_floor_high")
 
-    override fun getInterstitialAdUnitIds(): List<Map<String, String>> = parseJsonToListOfMaps("ads_inters_wf")
+    override fun getInterstitialAdUnitIds(): List<Map<String, String>> =
+        parseJsonToListOfMaps("ads_inters_wf")
 
-    override fun getNativeAdUnitIds(): List<Map<String, String>> = parseJsonToListOfMaps("ads_native_wf")
+    override fun getNativeAdUnitIds(): List<Map<String, String>> =
+        parseJsonToListOfMaps("ads_native_wf")
 
-    override fun getAdPlacesAppOpen(): Map<String, Map<String, Any>> = parseAdPlaces("ad_places_app_open")
+    override fun getAdPlacesAppOpen(): Map<String, Map<String, Any>> =
+        parseAdPlaces("ad_places_app_open")
 
-    override fun getAdPlacesInterstitial(): Map<String, Map<String, Any>> = parseAdPlaces("ad_places_interstitial")
+    override fun getAdPlacesInterstitial(): Map<String, Map<String, Any>> =
+        parseAdPlaces("ad_places_interstitial")
 
-    override fun getAdPlacesNative(): Map<String, Map<String, Any>> = parseAdPlaces("ad_places_native")
+    override fun getAdPlacesNative(): Map<String, Map<String, Any>> =
+        parseAdPlaces("ad_places_native")
 
-    override fun getAdPlacesBanner(): Map<String, Map<String, Any>> = parseAdPlaces("ad_places_banner")
+    override fun getAdPlacesBanner(): Map<String, Map<String, Any>> =
+        parseAdPlaces("ad_places_banner")
 
-    override fun getAppVersionCtaRate(): List<String> = parseJsonToStringList("app_versions_cta_show_rate")
+    override fun getAppVersionCtaRate(): List<String> =
+        parseJsonToStringList("app_versions_cta_show_rate")
 
     override fun getAdsNativePremium(): List<String> = parseJsonToStringList("ads_natives_premium")
 
@@ -171,7 +232,7 @@ class FirebaseRemoteConfigProvider @Inject constructor(
 
     override fun getWaterfallApply(): Boolean {
         // return getBoolean("waterfall_apply")
-        return true
+        return false
     }
 
     override fun getWaterfallLoadingMode(): Int = getLong("waterfall_loading_mode").toInt()

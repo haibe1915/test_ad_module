@@ -57,33 +57,6 @@ interface RemoteConfigProvider {
     fun getConfigScreenResult(): Map<String, Any>
     fun getConfigPreventAdClick(): Map<String, Any>
 
-    // Some app code might still read these configs directly.
-    fun getReloadTime(): Map<String, Any>
-    fun getConfigAdInterstitial(): Map<String, Any>
-    fun getConfigAdReward(): Map<String, Any>
-    fun getConfigAdNative(): Map<String, Any>
-    fun getConfigAdBanner(): Map<String, Any>
-    fun getConfigAdAppOpen(): Map<String, Any>
-
-    fun getRemoteAdUnitId(): Map<String, String>
-    fun getHighFloorAdUnitId(): Map<String, String>
-    fun getLowAdUnitIds(): Map<String, String>
-    fun getHighAdUnitIds(): Map<String, String>
-    fun getInterstitialAdUnitIds(): List<Map<String, String>>
-    fun getNativeAdUnitIds(): List<Map<String, String>>
-
-    fun getAdPlacesAppOpen(): Map<String, Map<String, Any>>
-    fun getAdPlacesInterstitial(): Map<String, Map<String, Any>>
-    fun getAdPlacesNative(): Map<String, Map<String, Any>>
-    fun getAdPlacesBanner(): Map<String, Map<String, Any>>
-
     fun getAppVersionCtaRate(): List<String>
-    fun getAdsNativePremium(): List<String>
-    fun getCollapsibleBanner(): List<String>
-
-    fun getWaterfallApply(): Boolean
-    fun getWaterfallLoadingMode(): Int
-    fun getWaterfallDebug(): Boolean
-    fun getMaxRetry(): Int
 }
 

@@ -34,4 +34,10 @@ interface AdClientGateway {
     fun getInterstitialAdFailReloadTime(): Int
     fun getRewardAdFailReloadTime(): Int
     fun getNativeAdReloadNewAdTime(): Int
+
+//    fun setNativeAdsPositionKeys(keyList: List<String>)
+//    fun setInterstitialAdsPositionKeys(keyList: List<String>)
+//    fun setOpenAdsPositionKeys(keyList: List<String>)
+//    fun setBannerAdsPositionKeys(keyList: List<String>)
+//    fun setRewardAdsPositionKeys(keyList: List<String>)
 }

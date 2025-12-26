@@ -51,9 +51,41 @@ class SplashViewModel @Inject constructor(
         viewModelScope.launch {
             val remoteConfigJob = async { fetchRemoteConfig() }
 
-            awaitAll(remoteConfigJob)
+            val adsInitializeJob = async {
+                adsInitializer.initialize(
+                    activity, this,
+                    nativeAdsKeys = listOf(
+                        "native_common",
+                        "native_popup_country",
+                        "native_onboard_screen",
+                        "native_history_screen",
+                        "native_text_screen",
+                        "native_document_translate",
+                        "native_setting_screen",
+                        "native_camera_screen",
+                        "native_save_document",
+                        "native_screen_translate_screen",
+                        "native_conversation_screen",
+                        "native_ad_warning",
+                        "native_pick_file_screen",
+                        "native_process_translate_file"
+                    ),
+                    bannerAdsKeys = emptyList(),
+                    interstitialAdsKeys = listOf(
+                        "inter_common",
+                        "inter_back",
+                        "inter_after_translate_screen",
+                        "inter_open_app"
+                    ),
+                    rewardAdsKeys = emptyList(),
+                    openAdsKeys = listOf(
+                        "app_open_back",
+                        "app_open_open_app"
+                    )
+                )
+            }
 
-            adsInitializer.initialize(context, this)
+            awaitAll(remoteConfigJob, adsInitializeJob)
 
             startNavigate(activity)
         }
@@ -64,28 +96,13 @@ class SplashViewModel @Inject constructor(
         delay(500)
     }
 
-    private suspend fun checkConsent(activity: Activity): Boolean {
-        return suspendCancellableCoroutine { continuation ->
-            val params = ConsentRequestParameters.Builder().build()
-            val consentInformation = UserMessagingPlatform.getConsentInformation(activity)
-
-            consentInformation.requestConsentInfoUpdate(activity, params, {
-                UserMessagingPlatform.loadAndShowConsentFormIfRequired(activity) {
-                    continuation.resumeWith(Result.success(true))
-                }
-            }, {
-                continuation.resumeWith(Result.success(false))
-            })
-        }
-    }
-
     private fun startNavigate(activity: Activity) {
         val isPremium = false // LocalStorage.premiumState
 
 
         adNativeManager.preloadAd(
             context = activity,
-            adUnitKey = AdUnitKeys.LanguageNative,
+            adUnitKey = AdUnitKeys.NativeCommon,
             factoryId = "language_native_ad",
             adChoicesPlacement = null,
             saved = null
@@ -99,9 +116,9 @@ class SplashViewModel @Inject constructor(
         val action = splashAdCoordinator.loadAndShowSplash(
             activity = activity,
             adType = AdType.openApp,
-            adUnitKey = AdUnitKeys.GlobalOpen,
+            adUnitKey = AdUnitKeys.AppOpenOpenApp,
             onAfterAd = { showRouteAfterAd() },
-            timeoutMs = 5000,
+            timeoutMs = 50000,
             isHighFloor = true,
         )
 
@@ -132,7 +149,7 @@ class SplashViewModel @Inject constructor(
         splashAdCoordinator.onPermissionResult(
             activity = activity,
             adType = AdType.openApp,
-            adUnitKey = AdUnitKeys.GlobalOpen,
+            adUnitKey = AdUnitKeys.AppOpenOpenApp,
             onAfterAd = { showRouteAfterAd() },
         )
     }

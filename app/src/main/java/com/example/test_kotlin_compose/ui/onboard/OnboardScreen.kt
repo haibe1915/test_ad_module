@@ -31,7 +31,7 @@ fun OnboardScreen(
         content = { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
                 NativeAdComposable(
-                    adUnitKey = AdUnitKeys.HistoryNative,
+                    adUnitKey = AdUnitKeys.NativeHistoryScreen,
                     factoryId = "adFactoryHistoryItem",
                     manager = nativeAdManager,
                     adClient = viewModel.adClient,
