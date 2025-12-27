@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.test_kotlin_compose.integration.adComponent.BannerAdComposable
 import com.example.test_kotlin_compose.integration.adComponent.NativeAdComposable
 import com.example.test_kotlin_compose.integration.adManager.impl.RewardAdManagerImpl
 import com.example.test_kotlin_compose.integration.adManager.impl.BannerAdManagerImpl
@@ -131,7 +130,7 @@ fun LanguageScreen(
                             onClick = {
                                 val activity = context as? Activity
                                 if (activity != null) {
-                                    openAdManager.showAdIfAvailable(
+                                    openAdManager.showAd(
                                         activity,
                                         adUnitKey = AdUnitKeys.AppOpenOpenApp,
                                         {}

@@ -98,7 +98,7 @@ class SplashAdCoordinatorImpl @Inject constructor(
 
             AdType.openApp -> {
                 adOpenManager.updateDoneGetPermission(true)
-                adOpenManager.showAdIfAvailable(
+                adOpenManager.showAd(
                     activity = activity,
                     adUnitKey = adUnitKey,
                     onShowAdComplete = onAfterAd,

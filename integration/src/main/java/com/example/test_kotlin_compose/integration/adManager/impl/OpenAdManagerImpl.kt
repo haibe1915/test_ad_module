@@ -301,7 +301,7 @@ class OpenAdManagerImpl @Inject constructor(
      * If no ad is available, this method calls [onShowAdComplete] immediately and triggers
      * a background [load] to refill the cache.
      */
-    fun showAdIfAvailable(
+    fun showAd(
         activity: Activity,
         adUnitKey: String,
         onShowAdComplete: () -> Unit,
@@ -423,7 +423,7 @@ class OpenAdManagerImpl @Inject constructor(
                 override fun onAdLoaded(ad: AppOpenAd) {
                     adComplete = true
                     appOpenAdMapper[adUnitId] = ad
-                    showAdIfAvailable(activity, adUnitKey) {
+                    showAd(activity, adUnitKey) {
                         callback?.invoke()
                     }
                 }
